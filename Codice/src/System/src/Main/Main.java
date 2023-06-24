@@ -8,6 +8,6 @@ public class Main {
     public static void main(String[] args) {
         ModuloLogin log = new ModuloLogin();
         Utente utente = new Utente();
-        RegistraFamiglia reg = new RegistraFamiglia();
+        /* RegistraFamiglia reg = new RegistraFamiglia(); per testare*/
     }
 }
