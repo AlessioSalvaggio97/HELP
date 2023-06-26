@@ -16,7 +16,7 @@ public class VisualizzaDatiFamiglia extends JFrame {
     public VisualizzaDatiFamiglia() {
 
         setTitle("Elenco famiglie");
-        
+
         // Imposta le dimensioni e la chiusura dell'applicazione
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,14 +71,19 @@ public class VisualizzaDatiFamiglia extends JFrame {
             // Esegue la query
             ResultSet resultSet = statement.executeQuery(query);
 
-            // Crea un modello di tabella per i dati delle famiglie
-            DefaultTableModel tableModel = new DefaultTableModel();
+            // Crea un modello di tabella personalizzato per i dati delle famiglie
+            DefaultTableModel tableModel = new DefaultTableModel() {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                return column==3; // Rende tutte le celle non modificabili tranne Visualizza
+                }
+            };
 
             // Aggiungi le colonne al modello di tabella
             tableModel.addColumn("ID_F");
             tableModel.addColumn("ID_U");
             tableModel.addColumn("componenti");
-            tableModel.addColumn("Visualizza"); // Aggiunge la colonna per il pulsante Visualizza
+            tableModel.addColumn("Visualizza");
 
             // Popola il modello di tabella con i dati delle famiglie
             while (resultSet.next()) {
@@ -88,12 +93,12 @@ public class VisualizzaDatiFamiglia extends JFrame {
                 String componenti = resultSet.getString("componenti");
 
                 // Crea un oggetto per rappresentare la riga della tabella
-                Object[] rowData = new Object[4]; // Modifica il numero in base al numero di colonne
+                Object[] rowData = new Object[4];
                 rowData[0] = id_f;
                 rowData[1] = id_u;
                 rowData[2] = componenti;
 
-                // Aggiungi un pulsante "Visualizza" alla riga
+                
                 JButton viewButton = new JButton("Visualizza");
                 viewButton.addActionListener(new ActionListener() {
                     @Override
@@ -107,7 +112,7 @@ public class VisualizzaDatiFamiglia extends JFrame {
                 });
                 rowData[3] = viewButton;
 
-                // Aggiungi la riga al modello di tabella
+                
                 tableModel.addRow(rowData);
             }
 
@@ -116,19 +121,19 @@ public class VisualizzaDatiFamiglia extends JFrame {
             famiglieTable.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
             famiglieTable.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox()));
 
-                // Imposta l'allineamento al centro per le colonne desiderate
+            // Imposta l'allineamento al centro per le colonne desiderate
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-    centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-    famiglieTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // ID_F
-    famiglieTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer); // ID_U
-    famiglieTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // componente
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            famiglieTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // ID_F
+            famiglieTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer); // ID_U
+            famiglieTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // componente
             
             // Chiude il result set e lo statement
             resultSet.close();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+            }
     }
 
     private class ButtonRenderer extends DefaultTableCellRenderer {
@@ -169,7 +174,6 @@ public class VisualizzaDatiFamiglia extends JFrame {
             button.setText("Visualizza");
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                // Azione da eseguire quando il pulsante viene premuto
                 int id_f = (int) table.getValueAt(row, 0); // Ottieni l'ID della famiglia dalla tabella
                 showFamilyDetails(id_f); // Chiamata al metodo per visualizzare i dettagli della famiglia
         }
@@ -212,7 +216,12 @@ public class VisualizzaDatiFamiglia extends JFrame {
         ResultSet resultSet = statement.executeQuery();
 
         // Crea un modello di tabella per i dati dei componenti
-        DefaultTableModel tableModel = new DefaultTableModel();
+        DefaultTableModel tableModel = new DefaultTableModel(){
+            @Override
+                public boolean isCellEditable(int row, int column) {
+                return false; // Rende tutte le celle non modificabili tranne Visualizza
+                }
+        };
         tableModel.addColumn("Codice Fiscale");
         tableModel.addColumn("ID_F");
         tableModel.addColumn("Nome");
@@ -235,6 +244,7 @@ public class VisualizzaDatiFamiglia extends JFrame {
             tableModel.addRow(rowData);
         }
 
+        
         // Crea una tabella utilizzando il modello di tabella
         JTable componentiTable = new JTable(tableModel);
 
