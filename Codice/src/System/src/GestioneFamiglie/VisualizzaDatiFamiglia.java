@@ -1,13 +1,13 @@
 package GestioneFamiglie;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 public class VisualizzaDatiFamiglia extends JFrame {
     private Connection connection;
@@ -17,12 +17,13 @@ public class VisualizzaDatiFamiglia extends JFrame {
 
         setTitle("Elenco famiglie");
 
+        // Inizializza la connessione al DBMS
+        initializeDBConnection();
+
+
         // Imposta le dimensioni e la chiusura dell'applicazione
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Inizializza la connessione al DBMS
-        initializeDBConnection();
 
         // Crea un pannello principale con layout BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -57,7 +58,7 @@ public class VisualizzaDatiFamiglia extends JFrame {
             connection = DriverManager.getConnection(url, username, password);
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-        }
+            }
     }
 
     private void showFamilyData() {
@@ -74,9 +75,9 @@ public class VisualizzaDatiFamiglia extends JFrame {
             // Crea un modello di tabella personalizzato per i dati delle famiglie
             DefaultTableModel tableModel = new DefaultTableModel() {
                 @Override
-                public boolean isCellEditable(int row, int column) {
-                return column==3; // Rende tutte le celle non modificabili tranne Visualizza
-                }
+                    public boolean isCellEditable(int row, int column) {
+                    return column==3; // Rende tutte le celle non modificabili tranne Visualizza
+                    }
             };
 
             // Aggiungi le colonne al modello di tabella
@@ -97,21 +98,17 @@ public class VisualizzaDatiFamiglia extends JFrame {
                 rowData[0] = id_f;
                 rowData[1] = id_u;
                 rowData[2] = componenti;
-
                 
                 JButton viewButton = new JButton("Visualizza");
                 viewButton.addActionListener(new ActionListener() {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Azione da eseguire quando viene premuto il pulsante "Visualizza"
-                        // Per esempio, puoi ottenere l'ID della famiglia selezionata e mostrare ulteriori dettagli
-                        int selectedRow = famiglieTable.getSelectedRow();
-                        int selectedFamilyId = (int) famiglieTable.getValueAt(selectedRow, 0);
-                        System.out.println("Visualizza dettagli per ID_F: " + selectedFamilyId);
-                    }
+                        public void actionPerformed(ActionEvent e) {
+                            int selectedRow = famiglieTable.getSelectedRow();
+                            int selectedFamilyId = (int) famiglieTable.getValueAt(selectedRow, 0);
+                            System.out.println("Visualizza dettagli per ID_F: " + selectedFamilyId);
+                        }
                 });
                 rowData[3] = viewButton;
-
                 
                 tableModel.addRow(rowData);
             }
@@ -163,9 +160,9 @@ public class VisualizzaDatiFamiglia extends JFrame {
             button.setOpaque(true);
             button.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped();
-                }
+                    public void actionPerformed(ActionEvent e) {
+                        fireEditingStopped();
+                    }
             });
         }
 
@@ -174,17 +171,15 @@ public class VisualizzaDatiFamiglia extends JFrame {
             button.setText("Visualizza");
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                int id_f = (int) table.getValueAt(row, 0); // Ottieni l'ID della famiglia dalla tabella
-                showFamilyDetails(id_f); // Chiamata al metodo per visualizzare i dettagli della famiglia
-        }
-    });
-    return (Component) button;
+                    int id_f = (int) table.getValueAt(row, 0); // Ottieni l'ID della famiglia dalla tabella
+                    showFamilyDetails(id_f); // Chiamata al metodo per visualizzare i dettagli della famiglia
+                }
+            });
+            return (Component) button;
         }
 
         public Object getCellEditorValue() {
             if (clicked) {
-                // Azione da eseguire quando viene premuto il pulsante "Visualizza"
-                // Per esempio, puoi ottenere l'ID della famiglia selezionata e mostrare ulteriori dettagli
                 int selectedRow = famiglieTable.getSelectedRow();
                 int selectedFamilyId = (int) famiglieTable.getValueAt(selectedRow, 0);
                 System.out.println("Visualizza dettagli per ID_F: " + selectedFamilyId);
@@ -204,65 +199,107 @@ public class VisualizzaDatiFamiglia extends JFrame {
     }
 
     private void showFamilyDetails(int id_f) {
-    // Esegue la query per ottenere i dati dei componenti della famiglia con l'ID specificato
-    String query = "SELECT * FROM componente WHERE ID_F = ?";
+    
+        // Esegue la query per ottenere i dati dei componenti della famiglia con l'ID specificato
+        String query = "SELECT * FROM componente WHERE ID_F = ?";
+    
+        try {
+            // Crea un prepared statement
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, id_f);
 
-    try {
-        // Crea un prepared statement
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setInt(1, id_f);
+            // Esegue la query
+            ResultSet resultSet = statement.executeQuery(); 
 
-        // Esegue la query
-        ResultSet resultSet = statement.executeQuery();
+            // Crea un modello di tabella per i dati dei componenti
+            EditableTableModel tableModel = new EditableTableModel(new Object[]{"Codice Fiscale", "ID_F", "Nome", "Cognome", "Data", "Indirizzo", "Bisogni"}, 0);
+        
+            // Popola il modello di tabella con i dati dei componenti
+            while (resultSet.next()) {
+                String codiceFiscale = resultSet.getString("codice_fiscale");
+                int idFamily = resultSet.getInt("ID_F");
+                String nome = resultSet.getString("nome");
+                String cognome = resultSet.getString("cognome");
+                Date data = resultSet.getDate("data_nascita");
+                String indirizzo = resultSet.getString("indirizzo");
+                String bisogni = resultSet.getString("bisogni");
 
-        // Crea un modello di tabella per i dati dei componenti
-        DefaultTableModel tableModel = new DefaultTableModel(){
-            @Override
-                public boolean isCellEditable(int row, int column) {
-                return false; // Rende tutte le celle non modificabili tranne Visualizza
-                }
-        };
-        tableModel.addColumn("Codice Fiscale");
-        tableModel.addColumn("ID_F");
-        tableModel.addColumn("Nome");
-        tableModel.addColumn("Cognome");
-        tableModel.addColumn("Data");
-        tableModel.addColumn("Indirizzo");
-        tableModel.addColumn("Bisogni");
+                Object[] rowData = {codiceFiscale, idFamily, nome, cognome, data, indirizzo, bisogni};
+                tableModel.addRow(rowData);
+            }
+    
+            // Crea una tabella utilizzando il modello di tabella
+            JTable componentiTable = new JTable(tableModel);
+    
+            // Crea uno scroll pane per la tabella dei componenti
+            JScrollPane scrollPane = new JScrollPane(componentiTable);
 
-        // Popola il modello di tabella con i dati dei componenti
-        while (resultSet.next()) {
-            String codiceFiscale = resultSet.getString("codice_fiscale");
-            int idFamily = resultSet.getInt("ID_F");
-            String nome = resultSet.getString("nome");
-            String cognome = resultSet.getString("cognome");
-            Date data = resultSet.getDate("data_nascita");
-            String indirizzo = resultSet.getString("indirizzo");
-            String bisogni = resultSet.getString("bisogni");
+            // Crea i pulsanti "Modifica dati", "Aggiungi membro" ed "Elimina membro"
+            JButton modificaButton = new JButton("Modifica dati");
+            modificaButton.addActionListener(e -> {
+                tableModel.setEditable(true);
+                componentiTable.setModel(tableModel);
+            });
 
-            Object[] rowData = {codiceFiscale, idFamily, nome, cognome, data, indirizzo, bisogni};
-            tableModel.addRow(rowData);
+            //Da implementare questi 3
+            JButton invioButton = new JButton("Invio");
+            invioButton.addActionListener(e -> {
+            
+            });
+
+            JButton aggiungiButton = new JButton("Aggiungi membro");
+            aggiungiButton.addActionListener(e -> {
+            
+            });
+        
+            JButton eliminaButton = new JButton("Elimina membro");
+            eliminaButton.addActionListener(e -> {
+            
+            });
+
+            // Crea un pannello per i pulsanti
+            JPanel buttonsPanel = new JPanel();
+            buttonsPanel.add(modificaButton);
+            buttonsPanel.add(invioButton);
+            buttonsPanel.add(aggiungiButton);
+            buttonsPanel.add(eliminaButton);
+
+            // Crea una nuova finestra per visualizzare la tabella dei componenti e i pulsanti
+            JFrame detailsFrame = new JFrame("Dettagli Famiglia");
+            detailsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            detailsFrame.setLayout(new BorderLayout());
+            detailsFrame.add(scrollPane, BorderLayout.CENTER);
+            detailsFrame.add(buttonsPanel, BorderLayout.SOUTH);
+            detailsFrame.pack();
+            detailsFrame.setVisible(true);
+
+            // Chiude il result set e lo statement
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public class EditableTableModel extends DefaultTableModel {
+        private boolean isEditable = false;
+
+        public EditableTableModel(Object[] columnNames, int rowCount) {
+            super(columnNames, rowCount);
         }
 
-        
-        // Crea una tabella utilizzando il modello di tabella
-        JTable componentiTable = new JTable(tableModel);
+        public EditableTableModel(Object[][] data, Object[] columnNames) {
+            super(data, columnNames);
+        }
 
-        // Crea uno scroll pane per la tabella dei componenti
-        JScrollPane scrollPane = new JScrollPane(componentiTable);
+        @Override
+            public boolean isCellEditable(int row, int column) {
+                return isEditable;
+        }
 
-        // Crea una nuova finestra per visualizzare la tabella dei componenti
-        JFrame detailsFrame = new JFrame("Dettagli Famiglia");
-        detailsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        detailsFrame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-        detailsFrame.pack();
-        detailsFrame.setVisible(true);
-
-        // Chiude il result set e lo statement
-        resultSet.close();
-        statement.close();
-    } catch (SQLException e) {
-        e.printStackTrace();
+        public void setEditable(boolean editable) {
+            isEditable = editable;
+            fireTableStructureChanged();
+        }
     }
-}
 }
