@@ -50,7 +50,7 @@ public class RegistraFamiglia extends JFrame {
 
     private void initItems() {
         
-        //Selezione numero componenti *da sistemare*
+        //Selezione numero componenti
         JLabel seleziona = new JLabel("Seleziona il numero di componenti");
         
         String numeroComp[]= {"1", "2", "3", "4", "5", "6", "7", "8","9"};
