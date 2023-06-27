@@ -4,14 +4,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.Arrays;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import Connectivity.ConnectionClass;
+
 public class VisualizzaDatiFamiglia extends JFrame {
     private Connection connection;
     private JTable famiglieTable;
+    private JButton viewButton;
+    private JButton eliminaButton;
 
     public VisualizzaDatiFamiglia() {
 
@@ -27,7 +32,7 @@ public class VisualizzaDatiFamiglia extends JFrame {
 
         // Crea un pannello principale con layout BorderLayout
         JPanel mainPanel = new JPanel(new BorderLayout());
-
+        
         // Mostra i dati delle famiglie nella tabella
         showFamilyData();
 
@@ -46,19 +51,15 @@ public class VisualizzaDatiFamiglia extends JFrame {
 
 
     private void initializeDBConnection() {
-        String url = "jdbc:mysql://localhost:3306/dbms";
-        String username = "root";
-        String password = "donazioni";
+
+        ConnectionClass conn = new ConnectionClass();
 
         try {
-            // Carica il driver JDBC per MySQL
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // Crea la connessione al database
-            connection = DriverManager.getConnection(url, username, password);
-        } catch (ClassNotFoundException | SQLException e) {
+            connection = conn.getConnection();
+        } catch (Exception e) {
             e.printStackTrace();
-            }
+        }
+
     }
 
     private void showFamilyData() {
@@ -99,7 +100,7 @@ public class VisualizzaDatiFamiglia extends JFrame {
                 rowData[1] = id_u;
                 rowData[2] = componenti;
                 
-                JButton viewButton = new JButton("Visualizza");
+                viewButton = new JButton("Visualizza");
                 viewButton.addActionListener(new ActionListener() {
                     @Override
                         public void actionPerformed(ActionEvent e) {
@@ -134,69 +135,129 @@ public class VisualizzaDatiFamiglia extends JFrame {
     }
 
     private class ButtonRenderer extends DefaultTableCellRenderer {
-        private JButton button;
+    private JButton button;
 
-        public ButtonRenderer() {
-            setOpaque(true);
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if (value instanceof Component) {
-                button = (JButton) value;
-                return button;
-            }
-            return this;
-        }
+    public ButtonRenderer() {
+        setOpaque(true);
     }
+
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    if (value instanceof JButton) {
+        return (JButton) value;
+    } else if (value instanceof Boolean) {
+        boolean boolValue = (Boolean) value;
+        String buttonText = boolValue ? "Visualizza" : "Elimina";
+        JButton button = new JButton(buttonText);
+        button.setOpaque(true);
+        return button;
+    }
+
+    return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+}
+
+}
+
 
     private class ButtonEditor extends DefaultCellEditor {
-        private JButton button;
-        private String label;
-        private boolean clicked;
+    private JButton button;
+    private String label;
+    private int selectedRow;
+    private JTable table;
 
-        public ButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(new ActionListener() {
-                @Override
-                    public void actionPerformed(ActionEvent e) {
-                        fireEditingStopped();
+    public ButtonEditor(JCheckBox checkBox) {
+        super(checkBox);
+        button = new JButton();
+        button.setOpaque(true);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // L'azione del pulsante viene gestita qui
+                if (button.getText().equals("Elimina")) {
+                    int confirmResult = JOptionPane.showConfirmDialog(null, "Vuoi eliminare il membro? L'azione è irreversibile.", "Conferma eliminazione", JOptionPane.YES_NO_OPTION);
+                    if (confirmResult == JOptionPane.YES_OPTION) {
+                        // Esegui l'eliminazione dal DBMS
+                        eliminazione(selectedRow);
+
+                        // Mostra un messaggio di successo
+                        JOptionPane.showMessageDialog(null, "Membro eliminato con successo!");
+
+                        // Rimuovi la riga dalla tabella
+                        DefaultTableModel model = (DefaultTableModel) table.getModel();
+                        int selectedRow = table.convertRowIndexToModel(table.getEditingRow());
+                        model.removeRow(selectedRow);
                     }
-            });
-        }
-
-
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("Visualizza");
-            button.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    int id_f = (int) table.getValueAt(row, 0); // Ottieni l'ID della famiglia dalla tabella
-                    showFamilyDetails(id_f); // Chiamata al metodo per visualizzare i dettagli della famiglia
                 }
-            });
-            return (Component) button;
-        }
-
-        public Object getCellEditorValue() {
-            if (clicked) {
-                int selectedRow = famiglieTable.getSelectedRow();
-                int selectedFamilyId = (int) famiglieTable.getValueAt(selectedRow, 0);
-                System.out.println("Visualizza dettagli per ID_F: " + selectedFamilyId);
             }
-            clicked = false;
-            return new JButton(label);
-        }
+        });
+    }
 
-        public boolean stopCellEditing() {
-            clicked = false;
-            return super.stopCellEditing();
-        }
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+    this.table = table;
 
-        protected void fireEditingStopped() {
-            super.fireEditingStopped();
+    if (value instanceof JButton) {
+        button = (JButton) value;
+    } else {
+        button = new JButton();
+
+        if ((Boolean) value) {
+            button.setText("Visualizza");
+        } else {
+            button.setText("Elimina");
         }
     }
+
+    button.setOpaque(true);
+
+    button.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+            if (button.getText().equals("Visualizza")) {
+                int id_f = (int) table.getValueAt(row, 0);
+                showFamilyDetails(id_f);
+            } else if (button.getText().equals("Elimina")) {
+                int confirmResult = JOptionPane.showConfirmDialog(null, "Vuoi eliminare il membro? L'azione è irreversibile.", "Conferma eliminazione", JOptionPane.YES_NO_OPTION);
+                if (confirmResult == JOptionPane.YES_OPTION) {
+                    // Esegui l'eliminazione dal DBMS
+                    // ...
+
+                    // Mostra un messaggio di successo
+                    JOptionPane.showMessageDialog(null, "Membro eliminato con successo!");
+
+                    // Rimuovi la riga dalla tabella
+                    DefaultTableModel model = (DefaultTableModel) table.getModel();
+                    int selectedRow = table.convertRowIndexToModel(row);
+                    model.removeRow(selectedRow);
+                }
+            }
+        }
+    });
+
+    return button;
+}
+
+
+
+    public Object getCellEditorValue() {
+        return Boolean.valueOf(button.isSelected());
+    }
+
+    public boolean stopCellEditing() {
+        ActionListener[] listeners = button.getActionListeners();
+        for (ActionListener listener : listeners) {
+            button.removeActionListener(listener);
+        }
+        boolean stopped = super.stopCellEditing();
+        button = null;
+        return stopped;
+    }
+
+    protected void fireEditingStopped() {
+        super.fireEditingStopped();
+    }
+}
+
+
+
+
 
     private void showFamilyDetails(int id_f) {
     
@@ -212,9 +273,10 @@ public class VisualizzaDatiFamiglia extends JFrame {
             ResultSet resultSet = statement.executeQuery(); 
 
             // Crea un modello di tabella per i dati dei componenti
-            EditableTableModel tableModel = new EditableTableModel(new Object[]{"Codice Fiscale", "ID_F", "Nome", "Cognome", "Data", "Indirizzo", "Bisogni"}, 0);
-        
-            // Popola il modello di tabella con i dati dei componenti
+            EditableTableModel tableModel = new EditableTableModel(new Object[]{"Codice Fiscale", "ID_F", "Nome", "Cognome", "Data", "Indirizzo", "Bisogni", "Elimina"}, 0);
+            
+            
+
             while (resultSet.next()) {
                 String codiceFiscale = resultSet.getString("codice_fiscale");
                 int idFamily = resultSet.getInt("ID_F");
@@ -224,22 +286,44 @@ public class VisualizzaDatiFamiglia extends JFrame {
                 String indirizzo = resultSet.getString("indirizzo");
                 String bisogni = resultSet.getString("bisogni");
 
-                Object[] rowData = {codiceFiscale, idFamily, nome, cognome, data, indirizzo, bisogni};
+                eliminaButton = new JButton("Elimina");
+                
+                
+                // Crea un array con la dimensione corretta
+                Object[] rowData = new Object[tableModel.getColumnCount()];
+
+                // Imposta i valori per ciascuna colonna nell'array rowData
+                rowData[0] = codiceFiscale;
+                rowData[1] = idFamily;
+                rowData[2] = nome;
+                rowData[3] = cognome;
+                rowData[4] = data;
+                rowData[5] = indirizzo;
+                rowData[6] = bisogni;
+                rowData[7] = eliminaButton;
+
                 tableModel.addRow(rowData);
             }
-    
+            
             // Crea una tabella utilizzando il modello di tabella
             JTable componentiTable = new JTable(tableModel);
-    
+
+            componentiTable.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer());
+            componentiTable.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor(new JCheckBox()));
+
             // Crea uno scroll pane per la tabella dei componenti
             JScrollPane scrollPane = new JScrollPane(componentiTable);
 
             // Crea i pulsanti "Modifica dati", "Aggiungi membro" ed "Elimina membro"
             JButton modificaButton = new JButton("Modifica dati");
             modificaButton.addActionListener(e -> {
-                tableModel.setEditable(true);
-                componentiTable.setModel(tableModel);
-            });
+    for (int column = 0; column < tableModel.getColumnCount(); column++) {
+        if (column != 7) { // Indice della settima colonna
+            tableModel.setColumnEditable(column, true);
+        }
+    }
+    componentiTable.setModel(tableModel);
+});
 
             //Da implementare questi 3
             JButton invioButton = new JButton("Invio");
@@ -249,20 +333,14 @@ public class VisualizzaDatiFamiglia extends JFrame {
 
             JButton aggiungiButton = new JButton("Aggiungi membro");
             aggiungiButton.addActionListener(e -> {
-            
+                
             });
-        
-            JButton eliminaButton = new JButton("Elimina membro");
-            eliminaButton.addActionListener(e -> {
             
-            });
-
             // Crea un pannello per i pulsanti
             JPanel buttonsPanel = new JPanel();
             buttonsPanel.add(modificaButton);
             buttonsPanel.add(invioButton);
             buttonsPanel.add(aggiungiButton);
-            buttonsPanel.add(eliminaButton);
 
             // Crea una nuova finestra per visualizzare la tabella dei componenti e i pulsanti
             JFrame detailsFrame = new JFrame("Dettagli Famiglia");
@@ -282,24 +360,37 @@ public class VisualizzaDatiFamiglia extends JFrame {
     }
 
     public class EditableTableModel extends DefaultTableModel {
-        private boolean isEditable = false;
+    private boolean[] isEditableColumns;
 
-        public EditableTableModel(Object[] columnNames, int rowCount) {
-            super(columnNames, rowCount);
-        }
-
-        public EditableTableModel(Object[][] data, Object[] columnNames) {
-            super(data, columnNames);
-        }
-
-        @Override
-            public boolean isCellEditable(int row, int column) {
-                return isEditable;
-        }
-
-        public void setEditable(boolean editable) {
-            isEditable = editable;
-            fireTableStructureChanged();
-        }
+    public EditableTableModel(Object[] columnNames, int rowCount) {
+        super(columnNames, rowCount);
+        isEditableColumns = new boolean[columnNames.length];
+        Arrays.fill(isEditableColumns, false); // Imposta tutte le colonne come non modificabili
     }
+
+    public EditableTableModel(Object[][] data, Object[] columnNames) {
+        super(data, columnNames);
+        isEditableColumns = new boolean[columnNames.length];
+        Arrays.fill(isEditableColumns, true);
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+    if (column == getColumnCount() - 1) { // Ultima colonna (colonna del tasto "Elimina")
+        return true;
+    }
+    return isEditableColumns[column];
+}
+
+    public void setColumnEditable(int column, boolean editable) {
+        isEditableColumns[column] = editable;
+        fireTableStructureChanged();
+    }
+}
+
+    public void eliminazione(int selectedRow) {
+      //  int idToDelete = (int) table.getValueAt(selectedRow, );
+
+    }
+
 }
