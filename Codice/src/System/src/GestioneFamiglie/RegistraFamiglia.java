@@ -28,6 +28,7 @@ public class RegistraFamiglia extends JFrame {
     private JList<String> lista;
     private List<MembroFamiglia> membriFamiglia;
     List<String> codici = new ArrayList<>();
+    private boolean SQLError = false;
 
 
     public RegistraFamiglia() {
@@ -192,12 +193,17 @@ public class RegistraFamiglia extends JFrame {
             if (isRegistered) {
                 JOptionPane.showMessageDialog(this, "Uno o più membri sono già presenti nel sistema. Riprovare!", "Errore", JOptionPane.ERROR_MESSAGE);
             }
-            else {
-                inviaDatiAlDBMS(membriFamiglia);
-                UIManager.put("OptionPane.okButtonText", "Chiudi");
-                JOptionPane.showMessageDialog(this, "Famiglia inserita con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
-                // SchermataPrincipale();
-            }
+            if (SQLError) {
+                    JOptionPane.showMessageDialog(this, "Errore di connessione o invio dati!", "Errore", JOptionPane.ERROR_MESSAGE);
+                }
+            if (isRegistered==false && SQLError==false) {
+                    inviaDatiAlDBMS(membriFamiglia);
+                    if(SQLError==false) {
+                        UIManager.put("OptionPane.okButtonText", "Chiudi");
+                        JOptionPane.showMessageDialog(this, "Famiglia inserita con successo!", "Successo", JOptionPane.INFORMATION_MESSAGE);
+                        // SchermataPrincipale();
+                    }
+                }
         });
 
     }
@@ -233,7 +239,7 @@ public class RegistraFamiglia extends JFrame {
             resultSet = statement.executeQuery();
 
             // Verifica se i codici sono presenti
-            if (resultSet.next()) {
+            if (resultSet.next() || SQLError==true) {
                 isRegistered = true;
             }
 
@@ -243,6 +249,8 @@ public class RegistraFamiglia extends JFrame {
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            SQLError= true;
+            isRegistered = true;
             // Gestione degli errori di connessione o query
         }
 
@@ -278,6 +286,8 @@ public class RegistraFamiglia extends JFrame {
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Errore di connessione o invio dati!", "Errore", JOptionPane.ERROR_MESSAGE);
+            SQLError = true;
             // Gestione degli errori di connessione o query
         }
     }
