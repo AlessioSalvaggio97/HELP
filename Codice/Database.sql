@@ -57,10 +57,11 @@ INSERT INTO `componente` (`codice_fiscale`, `ID_F`, `nome`, `cognome`, `data_nas
 ('LP152632VMH56433', 10, 'Lorena', 'Palla', '1999-11-14', 'Via Montemaggiore, 7', 'glutine'),
 ('VM273744VAU98775', 10, 'Viviana', 'Marsala', '2001-12-24', 'Via Augello, 9', 'lattosio');
 
-CREATE TABLE `prodotto`(
+CREATE TABLE `prodotto`( /* lista prodotti selezionabili*/
 `ID_P` int UNSIGNED NOT NULL,
 `nome_prodotto` varchar(20) NOT NULL,
-`proprietà` varchar(30) /*fare prodotti generali o specifici?*/
+`proprietà` varchar(30), /*fare prodotti generali o specifici?*/
+`ID_U` int /*per le aziende che l'hanno selezionato*/
 );
 
 INSERT INTO `prodotto` (`ID_P`, `nome_prodotto`, `Proprietà`) VALUES
@@ -126,18 +127,13 @@ INSERT INTO `prodotto` (`ID_P`, `nome_prodotto`, `Proprietà`) VALUES
 CREATE TABLE `richiesta` (
 `ID_R` int UNSIGNED NOT NULL,
 `ID_P` varchar(20) NOT NULL,
+`ID_U` int NOT NULL, /*azienda*/
 `quantità` float(40) NOT NULL
 );
 
-INSERT INTO `richiesta` (`ID_R`, `ID_P`, `quantità`) VALUES
-(68, 22, 50),
-(69, 23, 60);
-
-/* CREATE TABLE `magazzino` ( /*prodotti presenti
-`ID_M` int UNSIGNED NOT NULL,
-`ID_P` int NOT NULL
-/*quantità prodotto poi va con la relazione con prodotto
-); */
+INSERT INTO `richiesta` (`ID_R`, `ID_P`, `ID_U`, `quantità`) VALUES
+(68, 22, 4, 50),
+(69, 23, 4, 60);
 
 CREATE TABLE `magazzino`( /*capienza*/
 `ID_M` int UNSIGNED NOT NULL,
@@ -166,17 +162,20 @@ INSERT INTO `contiene` (`ID`, `ID_P`, `ID_M`, `quantità`) VALUES
 CREATE TABLE `donazione`(
 `ID_D` int UNSIGNED NOT NULL,
 `ID_P` int NOT NULL,
+`ID_M` int NOT NULL,
+`ID_U` int NOT NULL, /*azienda che dona*/
 `data` date NOT NULL,
 `quantità_d` float(40) NOT NULL,
 `scadenza` date NOT NULL
 );
 
-INSERT INTO `donazione` (`ID_D`, `ID_P`, `data`, `quantità_d`, `scadenza`) VALUES
-(74, 22, '2023-03-25', 40, '2023-12-19'),
-(75, 23, '2023-04-25', 60, '2024-02-02');
+INSERT INTO `donazione` (`ID_D`, `ID_P`, `ID_M`, `ID_U`, `data`, `quantità_d`, `scadenza`) VALUES
+(74, 22, 70, 4, '2023-03-25', 40, '2023-12-19'),
+(75, 23, 71, 4, '2023-04-25', 60, '2024-02-02');
 
 CREATE TABLE `spedizione`(
 `ID_S` int UNSIGNED NOT NULL,
+`ID_U` int NOT NULL, /*utente che spedisce, amministratore o diocesi*/
 `data_arrivo` date NOT NULL,
 `ID_P` int NOT NULL,
 `scadenza` date NOT NULL,
@@ -184,15 +183,15 @@ CREATE TABLE `spedizione`(
 `stato` varchar(20) NOT NULL
 );
 
-INSERT INTO `spedizione` (`ID_S`, `data_arrivo`, `ID_P`, `scadenza`, `quantità_d`, `stato`) VALUES
-(76, '2023-04-01', 22, '2023-12-19', 40, 'Consegnato!'),
-(77, '2023-05-06', 23, '2024-02-02', 60, 'In transito!');
+INSERT INTO `spedizione` (`ID_S`, `ID_U`, `data_arrivo`, `ID_P`, `scadenza`, `quantità_d`, `stato`) VALUES
+(76, 2, '2023-04-01', 22, '2023-12-19', 40, 'Consegnato!'),
+(77, 1, '2023-05-06', 23, '2024-02-02', 60, 'In transito!');
 
 CREATE TABLE `scarico` (
 `ID_Scarico` int UNSIGNED NOT NULL,
 `ID_M` int NOT NULL,
 `ID_P` int NOT NULL,
-`ID_U` int NOT NULL,
+`ID_U` int NOT NULL, /*polo*/
 `quantità_smist` float(40) NOT NULL,
 `data_scarico` date NOT NULL
 );
@@ -200,6 +199,20 @@ CREATE TABLE `scarico` (
 INSERT INTO `scarico` (`ID_Scarico`, `ID_M`, `ID_P`, `ID_U`, `quantità_smist`, `data_scarico`) VALUES
 (78, 70, 22, 3, 40, '2023-04-05'),
 (79, 71, 23, 3, 60, '2023-05-06');
+
+CREATE TABLE `schema_di_distr` (
+`ID_Dis` int UNSIGNED NOT NULL,
+`ID_P` int NOT NULL,
+`ID_visualizzatore` int NOT NULL, /*diocesi o polo*/
+`ID_ricevente` int, /*polo*/
+`ID_F` int,
+`quantità`float(40)
+);
+
+INSERT INTO `schema_di_distr` (`ID_Dis`, `ID_P`, `ID_visualizzatore`, `ID_ricevente`, `ID_F`, `quantità`) VALUES
+(80, 22, 1, 3, NULL, 40), /*primo schema di distribuzione*/
+(81, 22, 3, NULL, 9, 10);
+
 
 /*Indici*/
 ALTER TABLE `utente`
@@ -218,11 +231,13 @@ ADD PRIMARY KEY (`codice_fiscale`),
 ADD KEY (`ID_F`);
 
 ALTER TABLE `prodotto`
-ADD PRIMARY KEY (`ID_P`);
+ADD PRIMARY KEY (`ID_P`),
+ADD KEY (`ID_U`);
 
 ALTER TABLE `richiesta`
 ADD PRIMARY KEY (`ID_R`),
-ADD KEY (`ID_P`);
+ADD KEY (`ID_P`),
+ADD KEY (`ID_U`);
 
 ALTER TABLE `magazzino`
 ADD PRIMARY KEY (`ID_M`);
@@ -234,17 +249,26 @@ ADD KEY (`ID_P`);
 
 ALTER TABLE `donazione`
 ADD PRIMARY KEY (`ID_D`),
-ADD KEY (`ID_P`);
+ADD KEY (`ID_P`),
+ADD KEY (`ID_U`);
 
 ALTER TABLE `spedizione`
 ADD PRIMARY KEY (`ID_S`),
-ADD KEY (`ID_P`);
+ADD KEY (`ID_P`),
+ADD KEY (`ID_U`);
 
 ALTER TABLE `scarico`
 ADD PRIMARY KEY (`ID_Scarico`),
 ADD KEY (`ID_M`),
 ADD KEY (`ID_P`),
 ADD KEY (`ID_U`);
+
+ALTER TABLE `schema_di_distr`
+ADD PRIMARY KEY (`ID_Dis`),
+ADD KEY (`ID_P`),
+ADD KEY (`ID_visualizzatore`),
+ADD KEY (`ID_ricevente`),
+ADD KEY (`ID_F`);
 
 /*Auto increment*/
 
@@ -281,3 +305,5 @@ MODIFY `ID_S` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 ALTER TABLE `scarico`
 MODIFY `ID_Scarico` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
+ALTER TABLE `schema_di_distr`
+MODIFY `ID_Dis` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
