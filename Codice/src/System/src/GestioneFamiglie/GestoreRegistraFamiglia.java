@@ -27,7 +27,7 @@ public class GestoreRegistraFamiglia {
     }
 
     private void gestisciRegistraFamiglia(){
-        JButton avvia s.getRegistraFamiglia();
+     //   JButton avvia s.getRegistraFamiglia();
         ActionListener avviaLstnr = e -> {
             System.out.println("Cliccato Registra Famiglia");
         };
