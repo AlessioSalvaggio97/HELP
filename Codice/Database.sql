@@ -16,6 +16,28 @@ INSERT INTO `utente` (`ID_U`, `email`, `password`, `nome`, `cognome`, `indirizzo
 (4, 'quartoutente@gmail.com', 'fourth', 'Barilla', NULL, 'Via Ernesto Basile, 30', 'Azienda', 0987654321),
 (5, 'quintoutente@gmail.com', 'fifth', 'Luisa', 'Morbillo', 'Via Cesare Boldrini, 5', 'RPT', 091234567499);
 
+CREATE TABLE `polo` (
+`ID_U` int UNSIGNED NOT NULL
+);
+
+INSERT INTO `polo` (`ID_U`) VALUES
+(3),
+(5);
+
+CREATE TABLE `diocesi` (
+`ID_U` int UNSIGNED NOT NULL
+);
+
+INSERT INTO `diocesi` (`ID_U`) VALUES
+(1);
+
+CREATE TABLE `azienda` (
+`ID_U` int UNSIGNED NOT NULL
+);
+
+INSERT INTO `azienda` (`ID_U`) VALUES
+(4);
+
 CREATE TABLE `notifica` (
 `ID_N` int UNSIGNED NOT NULL,
 `descrizione` varchar(100),
@@ -137,13 +159,14 @@ INSERT INTO `richiesta` (`ID_R`, `ID_P`, `ID_U`, `quantità`) VALUES
 
 CREATE TABLE `magazzino`( /*capienza*/
 `ID_M` int UNSIGNED NOT NULL,
+`ID_U` int UNSIGNED NOT NULL, /*amministratore (HELP), diocesi, polo*/
 `capienza_max` float(40) NOT NULL,
 `capienza_attuale` float(40) NOT NULL
 );
 
-INSERT INTO `magazzino` (`ID_M`, `capienza_max`, `capienza_attuale`) VALUES
-(70, 700, 300),
-(71, 900, 500);
+INSERT INTO `magazzino` (`ID_M`, `ID_U`, `capienza_max`, `capienza_attuale`) VALUES
+(70, 2, 700, 300),
+(71, 2, 900, 500);
 
 CREATE TABLE `contiene` (
 `ID` int UNSIGNED NOT NULL,
@@ -171,8 +194,21 @@ INSERT INTO `donazione` (`ID_D`, `ID_P`, `ID_M`, `ID_U`, `data`, `quantità_d`, 
 (75, 23, 71, 4, '2023-04-25', 60, '2024-02-02');
 
 CREATE TABLE `spedizione`(
-`ID_S` int UNSIGNED NOT NULL,
-`ID_U` int UNSIGNED NOT NULL, /*utente che spedisce, amministratore o diocesi*/
+`ID_Spe` int UNSIGNED NOT NULL,
+`ID_D` int UNSIGNED NOT NULL,
+`ID_U` int UNSIGNED NOT NULL, /*azienda che spedisce*/
+`data_arrivo` date NOT NULL,
+`stato` varchar(20) NOT NULL
+);
+
+INSERT INTO `spedizione` (`ID_Spe`, `ID_D`, `ID_U`, `data_arrivo`, `stato`) VALUES
+(76, 74, 4, '2023-03-30', 'Consegnato!'),
+(77, 75, 4, '2023-04-30', 'In consegna!');
+
+CREATE TABLE `smistamento`(
+`ID_Smi` int UNSIGNED NOT NULL, /*numero lotto*/
+`ID_U` int UNSIGNED NOT NULL, /*diocesi che smista*/
+`data_corrente` date DEFAULT (CURRENT_DATE),
 `data_arrivo` date NOT NULL,
 `ID_P` int UNSIGNED NOT NULL,
 `scadenza` date NOT NULL,
@@ -180,8 +216,8 @@ CREATE TABLE `spedizione`(
 `stato` varchar(20) NOT NULL
 );
 
-INSERT INTO `spedizione` (`ID_S`, `ID_U`, `data_arrivo`, `ID_P`, `scadenza`, `quantità_d`, `stato`) VALUES
-(76, 2, '2023-04-01', 22, '2023-12-19', 40, 'Consegnato!'),
+INSERT INTO `smistamento` (`ID_Smi`, `ID_U`, `data_arrivo`, `ID_P`, `scadenza`, `quantità_d`, `stato`) VALUES
+(76, 1, '2023-04-01', 22, '2023-12-19', 40, 'Consegnato!'),
 (77, 1, '2023-05-06', 23, '2024-02-02', 60, 'In transito!');
 
 CREATE TABLE `scarico` (
@@ -201,7 +237,7 @@ CREATE TABLE `schema_di_distr` (
 `ID_Dis` int UNSIGNED NOT NULL,
 `ID_P` int UNSIGNED NOT NULL,
 `ID_visualizzatore` int UNSIGNED NOT NULL, /*diocesi o polo*/
-`ID_ricevente` int UNSIGNED, /*polo*/
+`ID_ricevente` int UNSIGNED, /*polo che riceve i prodotti*/
 `ID_F` int UNSIGNED,
 `quantità`float(40)
 );
@@ -211,11 +247,19 @@ INSERT INTO `schema_di_distr` (`ID_Dis`, `ID_P`, `ID_visualizzatore`, `ID_riceve
 (81, 22, 3, NULL, 9, 10);
 
 
-/*Incrementi, indici e relazioni*/
-
+/*Auto-incrementi, indici e relazioni*/
 ALTER TABLE `utente`
 MODIFY ID_U int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6,
 ADD PRIMARY KEY (`ID_U`);
+
+ALTER TABLE `polo`
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
+
+ALTER TABLE `diocesi`
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
+
+ALTER TABLE `azienda`
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
 
 ALTER TABLE `notifica`
 MODIFY `ID_N` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9,
@@ -225,7 +269,7 @@ ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U) ON UPDATE CASCADE;
 ALTER TABLE `famiglia`
 MODIFY `ID_F` int UNSIGNED AUTO_INCREMENT, AUTO_INCREMENT=12,
 ADD PRIMARY KEY (`ID_F`),
-ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U) ON UPDATE CASCADE;
+ADD FOREIGN KEY (ID_U) REFERENCES polo(ID_U) ON UPDATE CASCADE;
 
 ALTER TABLE `componente`
 MODIFY `ID_F` INT UNSIGNED AUTO_INCREMENT, AUTO_INCREMENT=12,
@@ -235,17 +279,18 @@ ADD FOREIGN KEY (ID_F) REFERENCES famiglia(ID_F) ON UPDATE CASCADE;
 ALTER TABLE `prodotto`
 MODIFY `ID_P` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68,
 ADD PRIMARY KEY (`ID_P`),
-ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
+ADD FOREIGN KEY (ID_U) REFERENCES azienda(ID_U);
 
 ALTER TABLE `richiesta`
 MODIFY `ID_R` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70,
 ADD PRIMARY KEY (`ID_R`),
 ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
-ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
+ADD FOREIGN KEY (ID_U) REFERENCES azienda(ID_U);
 
 ALTER TABLE `magazzino`
 MODIFY `ID_M` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72,
-ADD PRIMARY KEY (`ID_M`);
+ADD PRIMARY KEY (`ID_M`),
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
 
 ALTER TABLE `contiene`
 MODIFY `ID` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74,
@@ -257,25 +302,31 @@ ALTER TABLE `donazione`
 MODIFY `ID_D` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76,
 ADD PRIMARY KEY (`ID_D`),
 ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
-ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
+ADD FOREIGN KEY (ID_U) REFERENCES azienda(ID_U);
 
 ALTER TABLE `spedizione`
-MODIFY `ID_S` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78,
-ADD PRIMARY KEY (`ID_S`),
-ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
-ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
+MODIFY `ID_Spe` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78,
+ADD PRIMARY KEY (`ID_Spe`),
+ADD FOREIGN KEY (ID_D) REFERENCES donazione(ID_D),
+ADD FOREIGN KEY (ID_U) REFERENCES azienda(ID_U);
 
 ALTER TABLE `scarico`
 MODIFY `ID_Scarico` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80,
 ADD PRIMARY KEY (`ID_Scarico`),
 ADD FOREIGN KEY (ID_M) REFERENCES magazzino(ID_M),
 ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
-ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
+ADD FOREIGN KEY (ID_U) REFERENCES polo(ID_U);
 
 ALTER TABLE `schema_di_distr`
 MODIFY `ID_Dis` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82,
 ADD PRIMARY KEY (`ID_Dis`),
 ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
 ADD FOREIGN KEY (ID_visualizzatore) REFERENCES utente(ID_U),
-ADD FOREIGN KEY (ID_ricevente) REFERENCES utente(ID_U),
+ADD FOREIGN KEY (ID_ricevente) REFERENCES polo(ID_U),
 ADD FOREIGN KEY (ID_F) REFERENCES famiglia(ID_F);
+
+ALTER TABLE `smistamento`
+MODIFY `ID_Smi` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70,
+ADD PRIMARY KEY (`ID_Smi`),
+ADD FOREIGN KEY (`ID_U`) REFERENCES diocesi(ID_U),
+ADD FOREIGN KEY (`ID_P`) REFERENCES prodotto(ID_P);
