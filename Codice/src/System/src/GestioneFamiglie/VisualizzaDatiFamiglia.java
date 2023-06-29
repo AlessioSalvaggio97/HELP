@@ -166,32 +166,7 @@ public class VisualizzaDatiFamiglia extends JFrame {
             super(checkBox);
             button = new JButton();
             button.setOpaque(true);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // L'azione del pulsante viene gestita qui
-                    if (button.getText().equals("Elimina")) {
-                        int confirmResult = JOptionPane.showConfirmDialog(null,
-                                "Vuoi eliminare il membro? L'azione è irreversibile.", "Conferma eliminazione",
-                                JOptionPane.YES_NO_OPTION);
-                        if (confirmResult == JOptionPane.YES_OPTION) {
-                            DefaultTableModel model = (DefaultTableModel) table.getModel();
-                            int selectedRow = table.convertRowIndexToModel(table.getEditingRow());
-
-                            // Esegui l'eliminazione dal DBMS
-                            eliminazione(model.getValueAt(selectedRow, 0));
-
-                            // Mostra un messaggio di successo
-                            JOptionPane.showMessageDialog(null, "Membro eliminato con successo!");
-
-                            // Rimuovi la riga dalla tabella
-
-                            model.removeRow(selectedRow);
-                        }
-                    }
-                }
-            });
-        }
+        } 
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
                 int column) {
@@ -221,8 +196,8 @@ public class VisualizzaDatiFamiglia extends JFrame {
                                 "Vuoi eliminare il membro? L'azione è irreversibile.", "Conferma eliminazione",
                                 JOptionPane.YES_NO_OPTION);
                         if (confirmResult == JOptionPane.YES_OPTION) {
+
                             // Esegui l'eliminazione dal DBMS
-                            
                             eliminazione(table.getValueAt(selectedRow, 0));
 
                             // Mostra un messaggio di successo
@@ -406,12 +381,24 @@ public class VisualizzaDatiFamiglia extends JFrame {
 
             if (rowsAffected > 0) {
                 System.out.println("Riga eliminata con successo.");
+                
+                // aggiungere aggiornamto database famiglie
+                String sql1 = "SELECT COUNT(*) AS membri_famiglia FROM componente WHERE ID_F = ( SELECT ID_  FROM componente WHERE codice_fiscale = '"+codiceDaEliminare+"')";
+                
+                // Crea uno statement
+                Statement statement2 = connection.createStatement();
+
+                // Esegue la query
+                ResultSet resultSet2 = statement.executeQuery(sql1);
+
+                int nuoviMembriFamiglia=resultSet2.getInt("membri_famiglia");
+
             } else {
                 System.out.println("Eliminazione non effettuata.");
             }
 
             // Chiudi la connessione
-            // connection.close();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
