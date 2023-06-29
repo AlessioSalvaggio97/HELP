@@ -4,9 +4,9 @@ public class Famiglia {
 
     private int ID_F;
     private int ID_U;
-    private String componenti;
+    private int componenti;
 
-    public Famiglia(int ID_F, int ID_U, String componenti) {
+    public Famiglia(int ID_F, int ID_U, int componenti) {
         this.ID_F = ID_F;
         this.ID_U = ID_U;
         this.componenti = componenti;
@@ -28,11 +28,11 @@ public class Famiglia {
         this.ID_U = ID_U;
     }
 
-    public String getComponenti() {
+    public int getComponenti() {
         return componenti;
     }
 
-    public void setComponenti(String componenti) {
+    public void setComponenti(int componenti) {
         this.componenti = componenti;
     }
 }
