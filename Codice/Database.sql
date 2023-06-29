@@ -19,7 +19,7 @@ INSERT INTO `utente` (`ID_U`, `email`, `password`, `nome`, `cognome`, `indirizzo
 CREATE TABLE `notifica` (
 `ID_N` int UNSIGNED NOT NULL,
 `descrizione` varchar(100),
-`ID_U` int NOT NULL
+`ID_U` int UNSIGNED NOT NULL
 );
 
 INSERT INTO `notifica` (`ID_N`, `descrizione`, `ID_U`) VALUES
@@ -29,8 +29,8 @@ INSERT INTO `notifica` (`ID_N`, `descrizione`, `ID_U`) VALUES
 
 CREATE TABLE `famiglia` (
 `ID_F` int UNSIGNED NOT NULL,
-`ID_U` int NOT NULL, /*per il polo*/
-`componenti` int NOT NULL
+`ID_U` int UNSIGNED, /*per il polo*/
+`componenti` int
 );
 
 INSERT INTO `famiglia` (`ID_F`, `ID_U`, `componenti`) VALUES
@@ -40,7 +40,7 @@ INSERT INTO `famiglia` (`ID_F`, `ID_U`, `componenti`) VALUES
 
 CREATE TABLE `componente` (
 `codice_fiscale` varchar(20) NOT NULL,
-`ID_F` int NOT NULL,
+`ID_F` int UNSIGNED,
 `nome` varchar(20) NOT NULL,
 `cognome` varchar(20) NOT NULL,
 `data_nascita` date NOT NULL,
@@ -60,11 +60,11 @@ INSERT INTO `componente` (`codice_fiscale`, `ID_F`, `nome`, `cognome`, `data_nas
 CREATE TABLE `prodotto`( /* lista prodotti selezionabili*/
 `ID_P` int UNSIGNED NOT NULL,
 `nome_prodotto` varchar(20) NOT NULL,
-`proprietà` varchar(30), /*fare prodotti generali o specifici?*/
-`ID_U` int /*per le aziende che l'hanno selezionato*/
+`proprietà` varchar(30),
+`ID_U` int UNSIGNED /*per le aziende che l'hanno selezionato*/
 );
 
-INSERT INTO `prodotto` (`ID_P`, `nome_prodotto`, `Proprietà`) VALUES
+INSERT INTO `prodotto` (`ID_P`, `nome_prodotto`, `proprietà`) VALUES
 /*adulti*/
 (12, 'Acqua', NULL),
 (13, 'Zucchero', NULL),
@@ -126,8 +126,8 @@ INSERT INTO `prodotto` (`ID_P`, `nome_prodotto`, `Proprietà`) VALUES
 
 CREATE TABLE `richiesta` (
 `ID_R` int UNSIGNED NOT NULL,
-`ID_P` varchar(20) NOT NULL,
-`ID_U` int NOT NULL, /*azienda*/
+`ID_P` int UNSIGNED NOT NULL,
+`ID_U` int UNSIGNED NOT NULL, /*azienda*/
 `quantità` float(40) NOT NULL
 );
 
@@ -147,8 +147,8 @@ INSERT INTO `magazzino` (`ID_M`, `capienza_max`, `capienza_attuale`) VALUES
 
 CREATE TABLE `contiene` (
 `ID` int UNSIGNED NOT NULL,
-`ID_P` int NOT NULL,
-`ID_M` int NOT NULL,
+`ID_P` int UNSIGNED NOT NULL,
+`ID_M` int UNSIGNED NOT NULL,
 `quantità` float(40)
 );
 
@@ -156,14 +156,11 @@ INSERT INTO `contiene` (`ID`, `ID_P`, `ID_M`, `quantità`) VALUES
 (72, 22, 70, 50),
 (73, 23, 71, 60);
 
-
-/*Rivedere schema di distribuzione*/
-
 CREATE TABLE `donazione`(
 `ID_D` int UNSIGNED NOT NULL,
-`ID_P` int NOT NULL,
-`ID_M` int NOT NULL,
-`ID_U` int NOT NULL, /*azienda che dona*/
+`ID_P` int UNSIGNED NOT NULL,
+`ID_M` int UNSIGNED NOT NULL,
+`ID_U` int UNSIGNED NOT NULL, /*azienda che dona*/
 `data` date NOT NULL,
 `quantità_d` float(40) NOT NULL,
 `scadenza` date NOT NULL
@@ -175,9 +172,9 @@ INSERT INTO `donazione` (`ID_D`, `ID_P`, `ID_M`, `ID_U`, `data`, `quantità_d`, 
 
 CREATE TABLE `spedizione`(
 `ID_S` int UNSIGNED NOT NULL,
-`ID_U` int NOT NULL, /*utente che spedisce, amministratore o diocesi*/
+`ID_U` int UNSIGNED NOT NULL, /*utente che spedisce, amministratore o diocesi*/
 `data_arrivo` date NOT NULL,
-`ID_P` int NOT NULL,
+`ID_P` int UNSIGNED NOT NULL,
 `scadenza` date NOT NULL,
 `quantità_d` float(40) NOT NULL,
 `stato` varchar(20) NOT NULL
@@ -189,9 +186,9 @@ INSERT INTO `spedizione` (`ID_S`, `ID_U`, `data_arrivo`, `ID_P`, `scadenza`, `qu
 
 CREATE TABLE `scarico` (
 `ID_Scarico` int UNSIGNED NOT NULL,
-`ID_M` int NOT NULL,
-`ID_P` int NOT NULL,
-`ID_U` int NOT NULL, /*polo*/
+`ID_M` int UNSIGNED NOT NULL,
+`ID_P` int UNSIGNED NOT NULL,
+`ID_U` int UNSIGNED NOT NULL, /*polo*/
 `quantità_smist` float(40) NOT NULL,
 `data_scarico` date NOT NULL
 );
@@ -202,10 +199,10 @@ INSERT INTO `scarico` (`ID_Scarico`, `ID_M`, `ID_P`, `ID_U`, `quantità_smist`, 
 
 CREATE TABLE `schema_di_distr` (
 `ID_Dis` int UNSIGNED NOT NULL,
-`ID_P` int NOT NULL,
-`ID_visualizzatore` int NOT NULL, /*diocesi o polo*/
-`ID_ricevente` int, /*polo*/
-`ID_F` int,
+`ID_P` int UNSIGNED NOT NULL,
+`ID_visualizzatore` int UNSIGNED NOT NULL, /*diocesi o polo*/
+`ID_ricevente` int UNSIGNED, /*polo*/
+`ID_F` int UNSIGNED,
 `quantità`float(40)
 );
 
@@ -214,96 +211,71 @@ INSERT INTO `schema_di_distr` (`ID_Dis`, `ID_P`, `ID_visualizzatore`, `ID_riceve
 (81, 22, 3, NULL, 9, 10);
 
 
-/*Indici*/
+/*Incrementi, indici e relazioni*/
+
 ALTER TABLE `utente`
+MODIFY ID_U int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6,
 ADD PRIMARY KEY (`ID_U`);
 
 ALTER TABLE `notifica`
+MODIFY `ID_N` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9,
 ADD PRIMARY KEY (`ID_N`),
-ADD KEY (`ID_U`);
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U) ON UPDATE CASCADE;
 
 ALTER TABLE `famiglia`
+MODIFY `ID_F` int UNSIGNED AUTO_INCREMENT, AUTO_INCREMENT=12,
 ADD PRIMARY KEY (`ID_F`),
-ADD KEY (`ID_U`);
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U) ON UPDATE CASCADE;
 
 ALTER TABLE `componente`
+MODIFY `ID_F` INT UNSIGNED AUTO_INCREMENT, AUTO_INCREMENT=12,
 ADD PRIMARY KEY (`codice_fiscale`),
-ADD KEY (`ID_F`);
+ADD FOREIGN KEY (ID_F) REFERENCES famiglia(ID_F) ON UPDATE CASCADE;
 
 ALTER TABLE `prodotto`
+MODIFY `ID_P` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68,
 ADD PRIMARY KEY (`ID_P`),
-ADD KEY (`ID_U`);
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
 
 ALTER TABLE `richiesta`
+MODIFY `ID_R` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70,
 ADD PRIMARY KEY (`ID_R`),
-ADD KEY (`ID_P`),
-ADD KEY (`ID_U`);
+ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
 
 ALTER TABLE `magazzino`
+MODIFY `ID_M` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72,
 ADD PRIMARY KEY (`ID_M`);
 
 ALTER TABLE `contiene`
+MODIFY `ID` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74,
 ADD PRIMARY KEY (`ID`),
-ADD KEY (`ID_M`),
-ADD KEY (`ID_P`);
+ADD FOREIGN KEY (ID_M) REFERENCES magazzino(ID_M),
+ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P);
 
 ALTER TABLE `donazione`
+MODIFY `ID_D` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76,
 ADD PRIMARY KEY (`ID_D`),
-ADD KEY (`ID_P`),
-ADD KEY (`ID_U`);
+ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
 
 ALTER TABLE `spedizione`
+MODIFY `ID_S` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78,
 ADD PRIMARY KEY (`ID_S`),
-ADD KEY (`ID_P`),
-ADD KEY (`ID_U`);
+ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
 
 ALTER TABLE `scarico`
+MODIFY `ID_Scarico` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80,
 ADD PRIMARY KEY (`ID_Scarico`),
-ADD KEY (`ID_M`),
-ADD KEY (`ID_P`),
-ADD KEY (`ID_U`);
+ADD FOREIGN KEY (ID_M) REFERENCES magazzino(ID_M),
+ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
+ADD FOREIGN KEY (ID_U) REFERENCES utente(ID_U);
 
 ALTER TABLE `schema_di_distr`
+MODIFY `ID_Dis` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82,
 ADD PRIMARY KEY (`ID_Dis`),
-ADD KEY (`ID_P`),
-ADD KEY (`ID_visualizzatore`),
-ADD KEY (`ID_ricevente`),
-ADD KEY (`ID_F`);
-
-/*Auto increment*/
-
-ALTER TABLE `utente`
-MODIFY `ID_U` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
-ALTER TABLE `notifica`
-MODIFY `ID_N` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
-ALTER TABLE `famiglia`
-MODIFY `ID_F` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
-ALTER TABLE `componente`
-MODIFY `ID_F` INT AUTO_INCREMENT;
-
-ALTER TABLE `prodotto`
-MODIFY `ID_P` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
-
-ALTER TABLE `richiesta`
-MODIFY `ID_R` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
-
-ALTER TABLE `magazzino`
-MODIFY `ID_M` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
-
-ALTER TABLE `contiene`
-MODIFY `ID` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
-
-ALTER TABLE `donazione`
-MODIFY `ID_D` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
-
-ALTER TABLE `spedizione`
-MODIFY `ID_S` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
-
-ALTER TABLE `scarico`
-MODIFY `ID_Scarico` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
-
-ALTER TABLE `schema_di_distr`
-MODIFY `ID_Dis` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
+ADD FOREIGN KEY (ID_P) REFERENCES prodotto(ID_P),
+ADD FOREIGN KEY (ID_visualizzatore) REFERENCES utente(ID_U),
+ADD FOREIGN KEY (ID_ricevente) REFERENCES utente(ID_U),
+ADD FOREIGN KEY (ID_F) REFERENCES famiglia(ID_F);
