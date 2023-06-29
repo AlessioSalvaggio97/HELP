@@ -127,7 +127,7 @@ public class RegistraFamiglia extends JFrame {
             constraints.gridy = 3;
             panelMembro.add(codice, constraints);
 
-            JLabel datalbl = new JLabel("Data di nascita: ");
+            JLabel datalbl = new JLabel("Data di nascita (AAAA-MM-GG): ");
 		    constraints.gridx = 0;
             constraints.gridy = 4;
             panelMembro.add(datalbl, constraints);
@@ -261,14 +261,20 @@ public class RegistraFamiglia extends JFrame {
     private void inviaDatiAlDBMS(List<MembroFamiglia> membriFamiglia) {
         Connection connection = null;
         PreparedStatement statement = null;
+        PreparedStatement famigliaStatement = null;
 
         try {
             // Creazione della connessione al DBMS
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/dbms", "root", "donazioni");
 
             // Preparazione della query di inserimento
+            String famigliaQuery = "INSERT INTO dbms.famiglia (componenti) VALUES ("+membriFamiglia.size()+")";
             String query = "INSERT INTO dbms.componente (codice_fiscale, nome, cognome, data_nascita, indirizzo, bisogni) VALUES (?, ?, ?, ?, ?, ?)";
+
+            famigliaStatement = connection.prepareStatement(famigliaQuery);
             statement = connection.prepareStatement(query);
+
+            famigliaStatement.executeUpdate();
 
             // Inserimento dei dati di ogni membro nella tabella famiglia
             for (MembroFamiglia membro : membriFamiglia) {
@@ -282,6 +288,7 @@ public class RegistraFamiglia extends JFrame {
             }
 
             // Chiusura delle risorse
+            famigliaStatement.close();
             statement.close();
             connection.close();
         } catch (SQLException e) {
