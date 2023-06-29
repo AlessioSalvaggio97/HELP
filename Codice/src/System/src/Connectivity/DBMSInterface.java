@@ -1,12 +1,15 @@
 package Connectivity;
 
 import Autenticazione.ModuloLogin;
+import Main.SchermataPrincipale;
 import javax.swing.*;
 import java.sql.*;
 
 public class DBMSInterface {
     ConnectionClass connClass = new ConnectionClass();
     Connection connDatabase;
+
+    //Autenticazione
     public DBMSInterface(ModuloLogin login, SchermataPrincipale s){
         connetti(login);
     }
@@ -35,5 +38,8 @@ public class DBMSInterface {
         }
         return null; 
     }
+
+    //GestioneFamiglia
+    
 }
     
