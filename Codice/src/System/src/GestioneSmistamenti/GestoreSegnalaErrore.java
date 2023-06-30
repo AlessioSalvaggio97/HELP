@@ -15,24 +15,29 @@ public class GestoreSegnalaErrore {
     private DBMSInterface db;
     private SchermataConfermaRicezioneSpedizione scConfRic;
     private Spedizione spedizione;
+    ModuloSegnalaErrore modulo;
 
     public GestoreSegnalaErrore(Spedizione spedizione) {
         this.s = s;
         this.u = u;
         this.db = db; // da gestire schermata, utente e db
         this.spedizione = spedizione;
-        ModuloSegnalaErrore modulo = new moduloSegnalaErrore();
+        gestisciSegnalaErrore();
+    }
+
+    public void gestisciSegnalaErrore() {
+        ModuloSegnalaErrore modulo = new ModuloSegnalaErrore(spedizione, this);
 
         float[] quantitàArrivate = modulo.getQuantitàArrivate();
 
         db.invioDatiQuantitàArrivate(spedizione, quantitàArrivate);
 
         db.invioNotifica(spedizione);
-
     }
 
-    public void destroyERedirect() { //mettere che chiude le schermate e pannello e torna alla schermata principale
-
+    public void chiudiModulo() {
+        modulo.dispose();
+        s.setVisible(true);
     }
 
 }

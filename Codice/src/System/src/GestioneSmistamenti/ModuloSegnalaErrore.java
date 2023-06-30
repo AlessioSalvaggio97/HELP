@@ -1,6 +1,7 @@
 package GestioneSmistamenti;
 
 import GestioneDonazioni.Spedizione;
+import GestioneSmistamenti.GestoreSegnalaErrore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +12,10 @@ public class ModuloSegnalaErrore extends JFrame {
     private JTextField[] quantitaArrivateFields;
     private JButton invioButton;
     private float[] quantitàArrivate;
+    private GestoreSegnalaErrore gestore;
 
-    public void moduloSegnalaErrore(Spedizione spedizione) {
+    public void moduloSegnalaErrore(Spedizione spedizione, GestoreSegnalaErrore gestore) {
+        this.gestore=gestore;
         int numeroProdotti = spedizione.size();
 
         // Crea la finestra del modulo di segnalazione degli errori
@@ -60,7 +63,7 @@ public class ModuloSegnalaErrore extends JFrame {
                 // ...
 
                 // Chiudi la finestra
-                finestra.dispose();
+                gestore.chiudiModulo();
             }
         });
 

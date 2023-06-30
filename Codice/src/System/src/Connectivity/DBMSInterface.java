@@ -2,6 +2,7 @@ package Connectivity;
 
 import Autenticazione.ModuloLogin;
 import Main.SchermataPrincipale;
+import GestioneFamiglie.Famiglia;
 import GestioneSmistamenti.GestoreConfermaSmistamento;
 import GestioneSmistamenti.GestoreConfermaSmistamento.Smistamento;
 
@@ -47,6 +48,61 @@ public class DBMSInterface {
     }
 
     // GestioneFamiglia
+
+    public boolean verificaDatiFamiglia(List<Famiglia.Componente> membriFamiglia) {
+        PreparedStatement st;
+
+        String query = "SELECT COUNT(*) FROM componenti WHERE codice = ?";
+        try {
+            st = connDatabase.prepareStatement(query);
+            for (Famiglia.Componente componente : membriFamiglia) {
+                st.setString(1, componente.getCodice());
+                ResultSet resultSet = st.executeQuery();
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    if (count > 0) {
+                        return true; // The codice already exists in the componenti
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // The codice doesn't exist in the componenti
+    }
+
+    public void inviaDatiFamiglia(List<Famiglia.Componente> membriFamiglia) {
+        try {
+            // Inserisce il numero di componenti nella tabella famiglia (aggiungere ID_U del
+            // polo utente che lo sta mettendo?)
+            int componentiSize = membriFamiglia.size();
+            String famigliaQuery = "INSERT INTO famiglia (componenti) VALUES (?)";
+
+            PreparedStatement famigliaStatement = connDatabase.prepareStatement(famigliaQuery);
+            famigliaStatement.setInt(1, componentiSize);
+            famigliaStatement.executeUpdate();
+            famigliaStatement.close();
+
+            // Inserisce tutti i dati dei componenti nella tabella componente
+            String componenteQuery = "INSERT INTO componente (codice_fiscale, nome, cognome, data_nascita, indirizzo, bisogni) VALUES (?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement componenteStatement = connDatabase.prepareStatement(componenteQuery);
+
+            for (Famiglia.Componente componente : membriFamiglia) {
+                componenteStatement.setString(1, componente.getCodice());
+                componenteStatement.setString(2, componente.getNome());
+                componenteStatement.setString(3, componente.getCognome());
+                componenteStatement.setString(4, componente.getData());
+                componenteStatement.setString(5, componente.getIndirizzo());
+                componenteStatement.setString(6, componente.getBisogni());
+                componenteStatement.executeUpdate();
+            }
+
+            componenteStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void eliminaMembro(String codice) {
         Statement st;
@@ -247,11 +303,11 @@ public class DBMSInterface {
         return smistamenti;
     }
 
-    public void confermaSmistamento(int ID_Smi){
+    public void confermaSmistamento(int ID_Smi) {
         Statement st;
 
-        String queryConferma = "UPDATE smistamento SET stato='Consegnato!' WHERE ID_Smi="+ID_Smi;
-        
+        String queryConferma = "UPDATE smistamento SET stato='Consegnato!' WHERE ID_Smi=" + ID_Smi;
+
         try {
             st = connDatabase.createStatement();
             st.executeUpdate(queryConferma);

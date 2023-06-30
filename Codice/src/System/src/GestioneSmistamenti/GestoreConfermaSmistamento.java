@@ -21,10 +21,14 @@ public class GestoreConfermaSmistamento {
         this.u = u;
         this.db = db;
 
+        gestisciConfermaSmistamento();
+
+    }
+
+    public void gestisciConfermaSmistamento(){
         smi = db.getSmistamento();
 
         scConfSmi = new SchermataConfermaSmistamento(smi, this);
-
     }
 
     public void chiudiSchermata() {
