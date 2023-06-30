@@ -2,6 +2,8 @@ package Connectivity;
 
 import Autenticazione.ModuloLogin;
 import Main.SchermataPrincipale;
+import GestioneSmistamenti.GestoreConfermaSmistamento;
+import GestioneSmistamenti.GestoreConfermaSmistamento.Smistamento;
 
 import javax.swing.*;
 
@@ -101,14 +103,25 @@ public class DBMSInterface {
         String query = "SELECT nome_prodotto, proprietà, quantità_d, scadenza, stato, data_arrivo FROM spedizione JOIN donazione JOIN prodotto WHERE ID_Spe = (SELECT MAX(ID_Spe) FROM spedizione) AND donazione.ID_P = prodotto.ID_P";
         try {
             st = connDatabase.createStatement();
-            spedizione = st.executeQuery(query);
+            ResultSet resultSet = st.executeQuery(query);
 
-            return spedizione;
+            if (resultSet.next()) {
+                spedizione = new Spedizione();
+                spedizione.setNomeProdotto(resultSet.getString("nome_prodotto"));
+                spedizione.setProprieta(resultSet.getString("proprietà"));
+                spedizione.setQuantitaD(resultSet.getInt("quantità_d"));
+                spedizione.setScadenza(resultSet.getDate("scadenza"));
+                spedizione.setStato(resultSet.getString("stato"));
+                spedizione.setDataArrivo(resultSet.getDate("data_arrivo"));
+            }
+
+            resultSet.close();
+            st.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return spedizione;
     }
 
     public void invioDatiRicezioneSpedizione(int ID_Spe, int ID_U) { // registra la quantità dei prodotti ricevuti e
@@ -199,4 +212,53 @@ public class DBMSInterface {
 
         return schema;
     }
+
+    // GestoreConfermaSmistamento
+    public List<GestoreConfermaSmistamento.Smistamento> getSmistamento() {
+        Statement st;
+        List<Smistamento> smistamenti = new ArrayList<>();
+
+        String query = "SELECT ID_Smi, nome_prodotto, proprietà, quantità, scadenza, data_corrente, data_arrivo, stato FROM smistamento JOIN prodotto ON smistamento.ID_P = prodotto.ID_P WHERE stato='In transito!' ";
+
+        try {
+            st = connDatabase.createStatement();
+            ResultSet resultSet = st.executeQuery(query);
+
+            while (resultSet.next()) {
+                Smistamento smistamento = new Smistamento();
+                smistamento.setID_Smi(resultSet.getInt("ID_Smi"));
+                smistamento.setNomeProdotto(resultSet.getString("nome_prodotto"));
+                smistamento.setProprieta(resultSet.getString("proprietà"));
+                smistamento.setQuantitaD(resultSet.getInt("quantità_d"));
+                smistamento.setScadenza(resultSet.getDate("scadenza"));
+                smistamento.setDataCorrente(resultSet.getDate("data_corrente"));
+                smistamento.setDataArrivo(resultSet.getDate("data_arrivo"));
+                smistamento.setStato(resultSet.getString("stato"));
+
+                smistamenti.add(smistamento);
+            }
+
+            resultSet.close();
+            st.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return smistamenti;
+    }
+
+    public void confermaSmistamento(int ID_Smi){
+        Statement st;
+
+        String queryConferma = "UPDATE smistamento SET stato='Consegnato!' WHERE ID_Smi="+ID_Smi;
+        
+        try {
+            st = connDatabase.createStatement();
+            st.executeUpdate(queryConferma);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

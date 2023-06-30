@@ -69,11 +69,12 @@ public class SchermataConfermaRicezioneSpedizione extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 GestoreRicezioneSpedizioni.invioDati();
 
-                // Mostra la schermata principale
+                // da aggiungere ritorno a schermata principale
+                
                 // JFrame frame = (JFrame)
                 // SwingUtilities.getRoot(SchermataConfermaRicezioneSpedizione.this);
                 // frame.getContentPane().removeAll();
-                // da aggiungere ritorno a schermata principale
+                
                 // frame.revalidate();
             }
         });
