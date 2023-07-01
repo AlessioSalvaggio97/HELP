@@ -82,8 +82,8 @@ public class ModuloLogin extends JFrame {
 		container.add(panel, BorderLayout.CENTER);
 	}
 
-	public void reindirizzamento(Utente utente) {
-		sc = new SchermataPrincipale(utente);
+	public void reindirizzamento(Utente utente, DBMSInterface db) {
+		sc = new SchermataPrincipale(utente, db);
 	}
 
 	public JButton getAccedi() {

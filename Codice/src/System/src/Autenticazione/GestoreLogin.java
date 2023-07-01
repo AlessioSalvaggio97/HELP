@@ -37,7 +37,7 @@ public class GestoreLogin {
 				String cognome = (String) tabellaUtente[2];
 				String indirizzo = (String) tabellaUtente[3];
 				String ruolo = (String) tabellaUtente[4];
-				int telefono = (int) tabellaUtente[5];
+				String telefono = (String) tabellaUtente[5];
 
 				utente = new Utente();
 				utente.setID_U(id);
@@ -47,7 +47,7 @@ public class GestoreLogin {
 				utente.setRuolo(ruolo);
 				utente.setTelefono(telefono);
 
-				modLog.reindirizzamento(utente);
+				modLog.reindirizzamento(utente, db);
 			} else {
 				System.out.println(passwordInserita);
 				System.out.println("Credenziali errate");

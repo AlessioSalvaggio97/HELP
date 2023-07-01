@@ -32,6 +32,7 @@ public class DBMSInterface {
             connDatabase = connClass.getConnection();
         } catch (Exception e) {
             
+            e.printStackTrace();
             System.out.println("Problema con la connessione");
             
             /*JOptionPane.showMessageDialog(login, "Problema con la connessione al DB, Ritenta", "Errore",
@@ -55,7 +56,7 @@ public class DBMSInterface {
                 credentials[2] = results.getString("cognome");
                 credentials[3] = results.getString("indirizzo");
                 credentials[4] = results.getString("ruolo");
-                credentials[5] = results.getInt("telefono");
+                credentials[5] = results.getString("telefono");
                 credentials[6] = results.getString("password");
                 return credentials;
             }

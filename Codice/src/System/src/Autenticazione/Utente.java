@@ -6,7 +6,7 @@ public class Utente {
 	private String cognome;
 	private String indirizzo;
 	private String ruolo;
-	private int telefono;
+	private String telefono;
 	
 	public int getID_U(){
 		return ID_U;
@@ -48,11 +48,11 @@ public class Utente {
 		this.ruolo = ruolo;
 	}
 	
-	public int getTelefono() {
-		return telefono;
-	}
-	
-	public void setTelefono(int telefono) {
-		this.telefono = telefono;
-	}
+	public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
 }
