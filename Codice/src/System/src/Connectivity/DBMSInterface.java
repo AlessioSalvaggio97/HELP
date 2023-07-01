@@ -1,9 +1,12 @@
 package Connectivity;
 
 import Autenticazione.ModuloLogin;
+import Autenticazione.Utente;
 import GestioneDonazioni.Richiesta;
 import Main.SchermataPrincipale;
 import GestioneFamiglie.Famiglia;
+import GestionePolo.GestoreScaricoMagazzino;
+import GestionePolo.GestoreScaricoMagazzino.ProdottoInMagazzino;
 import GestioneSmistamenti.GestoreConfermaSmistamento;
 import GestioneSmistamenti.GestoreConfermaSmistamento.Smistamento;
 
@@ -20,30 +23,42 @@ public class DBMSInterface {
     Connection connDatabase;
 
     // Autenticazione
-    public DBMSInterface(ModuloLogin login, SchermataPrincipale s) {
-        connetti(login);
+    public DBMSInterface() {
+        connetti();
     }
 
-    private void connetti(ModuloLogin login) {
+    private void connetti() {
         try {
             connDatabase = connClass.getConnection();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(login, "Problema con la connessione al DB, Ritenta", "Errore",
+            
+            System.out.println("Problema con la connessione");
+            
+            /*JOptionPane.showMessageDialog(login, "Problema con la connessione al DB, Ritenta", "Errore",
                     JOptionPane.ERROR_MESSAGE);
-            connetti(login);
+            connetti(login);*/
         }
     }
 
-    public ResultSet checkCredentials(String email, String pass) {
+    public Object[] verificaCredenziali(String email) {
         Statement st;
         ResultSet results;
-        String query = "SELECT * FROM utente WHERE email = '" + email + "' AND password='" + pass + "';";
+        String query = "SELECT * FROM utente WHERE email = '" + email + "';";
         try {
             st = connDatabase.createStatement();
             results = st.executeQuery(query);
 
-            return results;
-
+            if (results.next()) {
+                Object[] credentials = new Object[7];
+                credentials[0] = results.getInt("ID_U");
+                credentials[1] = results.getString("nome");
+                credentials[2] = results.getString("cognome");
+                credentials[3] = results.getString("indirizzo");
+                credentials[4] = results.getString("ruolo");
+                credentials[5] = results.getInt("telefono");
+                credentials[6] = results.getString("password");
+                return credentials;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -226,7 +241,7 @@ public class DBMSInterface {
         }
 
     }
-    
+
     // GestioneDonazioni
 
     public ArrayList<Richiesta> getRichieste(int ID_U) {
@@ -256,15 +271,12 @@ public class DBMSInterface {
         return richieste;
     }
 
-
-
-    //Aggiornamento schema di distribuzione da continuare
-    public void AggiornaSchemaDistribuzione(){
+    // Aggiornamento schema di distribuzione da continuare
+    public void AggiornaSchemaDistribuzione() {
         Statement st;
 
-        String query="UPDATE schema_di_distr";
+        String query = "UPDATE schema_di_distr";
     }
-    
 
     // Gestione smistamenti (con conferma ricezione spedizione)
 
@@ -431,6 +443,84 @@ public class DBMSInterface {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    // GestionePolo
+
+    // Gestore Scarico Magazzino
+
+    public List<ProdottoInMagazzino> getProdottiMagazzino(GestoreScaricoMagazzino gest) {
+        List<ProdottoInMagazzino> prodotti = new ArrayList<>();
+        String query = "SELECT nome_prodotto, proprietà, quantità, magazzino.ID_M, capienza_max, capienza_attuale, magazzino.ID_U, prodotto.ID_P FROM magazzino JOIN contiene JOIN prodotto ON magazzino.ID_M=contiene.ID_M AND prodotto.ID_P=contiene.ID_P";
+        gest = new GestoreScaricoMagazzino(null, null, null);
+        ProdottoInMagazzino prodotto;
+
+        try {
+            Statement statement = connDatabase.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                String nomeProdotto = resultSet.getString("nome_prodotto");
+                String proprieta = resultSet.getString("proprietà");
+                int quantita = resultSet.getInt("quantità");
+                int idMagazzino = resultSet.getInt("ID_M");
+                int capienzaMax = resultSet.getInt("capienza_max");
+                int capienzaAttuale = resultSet.getInt("capienza_attuale");
+                int idProdotto = resultSet.getInt("ID_P");
+
+                prodotto = gest.new ProdottoInMagazzino(nomeProdotto, proprieta, quantita, idMagazzino,
+                        capienzaMax, capienzaAttuale, idProdotto);
+                prodotti.add(prodotto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return prodotti;
+    }
+
+    public void aggiornaMagazzino(List<ProdottoInMagazzino> nuovoElencoProdotti, float sommaQuantita) {
+        PreparedStatement updateMagazzino = null;
+        PreparedStatement updateContiene = null;
+
+        try {
+            // Aggiorna la tabella magazzino
+            String updateMagazzinoQuery = "UPDATE magazzino SET capienza_attuale = ? WHERE ID_M = ?";
+            updateMagazzino = connDatabase.prepareStatement(updateMagazzinoQuery);
+
+            for (ProdottoInMagazzino prodotto : nuovoElencoProdotti) {
+                int nuovaCapienzaAttuale = prodotto.getCapienzaAttuale() + (int) sommaQuantita;
+                updateMagazzino.setInt(1, nuovaCapienzaAttuale);
+                updateMagazzino.setInt(2, prodotto.getIdMagazzino());
+                updateMagazzino.executeUpdate();
+            }
+
+            // Aggiorna la tabella contiene
+            String updateContieneQuery = "UPDATE contiene SET quantità = ? WHERE ID_P = ? AND ID_M = ?";
+            updateContiene = connDatabase.prepareStatement(updateContieneQuery);
+
+            for (ProdottoInMagazzino prodotto : nuovoElencoProdotti) {
+                int nuovaQuantita = prodotto.getQuantita() - (int) sommaQuantita;
+                updateContiene.setInt(1, nuovaQuantita);
+                updateContiene.setInt(2, prodotto.getId());
+                updateContiene.setInt(3, prodotto.getIdMagazzino());
+                updateContiene.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (updateMagazzino != null) {
+                    updateMagazzino.close();
+                }
+                if (updateContiene != null) {
+                    updateContiene.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

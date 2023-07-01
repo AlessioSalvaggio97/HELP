@@ -3,83 +3,101 @@ package Autenticazione;
 import java.awt.Container;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
 
+import Connectivity.DBMSInterface;
+
+import java.awt.BorderLayout;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import Main.SchermataPrincipale;
 
 public class ModuloLogin extends JFrame {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	String titolo = "Login";
 	int width = 1280;
 	int height = 720;
 	private JTextField email;
-	private JTextField password;
+	private JPasswordField password;
 	private JButton accedi;
 	private JButton recuperaPassword;
 	private JPasswordField passwordField;
-	
-	
-	
-	public ModuloLogin() {
+	private SchermataPrincipale sc;
+	private DBMSInterface db;
+
+	public ModuloLogin(DBMSInterface db) {
+		this.db = db;
 		this.setTitle(titolo);
 		this.setSize(width, height);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.initItems();
 		this.setVisible(true);
-		}
-	
+	}
+
 	private void initItems() {
 		Container container = this.getContentPane();
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
-		
-		//Input Email e Password
+
+		// Input Email e Password
 		JLabel emaillbl = new JLabel("E-mail: ");
 		email = new JTextField(20);
 		emaillbl.setBounds(500, 300, 100, 20);
 		email.setBounds(570, 300, 280, 20);
-		
+
 		JLabel passlbl = new JLabel("Password: ");
-		password = new JTextField(50);
+		passwordField = new JPasswordField(50);
 		passlbl.setBounds(500, 330, 100, 20);
-		password.setBounds(570, 330, 280, 20);
-		
-		
-		//Pulsante accedi
+		passwordField.setBounds(570, 330, 280, 20);
+
+		// Pulsante accedi
 		accedi = new JButton("Accedi");
 		accedi.setBounds(776, 361, 74, 30);
-		
-		
-		//Pulsante recuperaPassword
+
+		// Aggiunta dell'ActionListener al pulsante "Accedi"
+		accedi.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String emailValue = email.getText();
+				String passwordValue = new String(passwordField.getPassword());
+
+				// Invia i dati al GestoreLogin
+				GestoreLogin gestoreLogin = new GestoreLogin(db);
+				gestoreLogin.gestisciAccesso(emailValue, passwordValue, ModuloLogin.this);
+			}
+		});
+
+		// Pulsante recuperaPassword
 		recuperaPassword = new JButton("Recupera Password");
 		recuperaPassword.setBounds(570, 361, 196, 30);
-		
+
 		panel.add(emaillbl);
 		panel.add(email);
 		panel.add(passlbl);
 		panel.add(accedi);
 		panel.add(recuperaPassword);
-		container.add(panel, BorderLayout.CENTER);
-		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(570, 330, 280, 20);
 		panel.add(passwordField);
+		container.add(panel, BorderLayout.CENTER);
 	}
-	
+
+	public void reindirizzamento(Utente utente) {
+		sc = new SchermataPrincipale(utente);
+	}
+
 	public JButton getAccedi() {
 		return accedi;
 	}
-	////Aggiungere errore mail o password
-	
-	public JTextField getEmail() {
-		return email;
-	}
-	
-	public JTextField getPassword() {
-		return password;
-	}
+	//// Aggiungere errore mail o password
+
+	/*
+	 * public JTextField getEmail() {
+	 * return email;
+	 * }
+	 * 
+	 * public JTextField getPassword() {
+	 * return password;
+	 * }
+	 */
 }
