@@ -10,44 +10,44 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-
-public class GestoreVisualizzaRichieste{
+public class GestoreVisualizzaRichieste {
 	private SchermataPrincipale s;
 	private Utente u;
 	private DBMSInterface db;
-	private SchermataVisualizzaRichieste visRichieste;
-	
+	private SchermataRichieste visRichieste;
+
 	public GestoreVisualizzaRichieste(SchermataPrincipale s, Utente u, DBMSInterface db) {
 		this.s = s;
 		this.u = u;
 		this.db = db;
 		visualizzaRichieste();
 	}
-	
+
 	private void visualizzaRichieste() {
-		JButton visualizza = s.getVisualizzaRichieste(); //Da definire nella Schermata Principale
-		ActionListener visLstnr = e ->{
-			System.out.println("Visualizza Richieste");
-			visRichieste = new SchermataVisualizzaRichieste();
-			visRichieste.getChiudi().addActionListener(e1 ->{
-				visRichieste.dispose();
-			});
-			
-			ArrayList<Richiesta> richieste = db.getRichieste(u.getID_U()); //Creare classe Richiesta
-			CustomTableModel model = (DefaultTableModel) visRichieste.getTabellaRichieste().getModel();
-			String []colonne = {"Prodotto", "Quantità richiesta", ""};
-			model.setColumnIdentifiers(colonne);
-			String[] riga = new String[3];
-			for(int i = 0; i<richieste.size(); i++) {
-				riga[0] = richieste.get(i).getProdotto();
-				riga[1] = richieste.get(i).getQuantita();
-				riga[2] = "Programma Donazione";
-				model.addRow(riga);
-				
-			}
-		};
-		visualizza.addActionListener(visLstnr);
+
+		ArrayList<Richiesta> richieste = db.getRichieste(u.getID_U()); // Creare classe Richiesta
+
+		visRichieste = new SchermataRichieste(richieste, this);
+
+		/*
+		 * CustomTableModel model = (DefaultTableModel)
+		 * visRichieste.getTabellaRichieste().getModel();
+		 * String []colonne = {"Prodotto", "Quantità richiesta", ""};
+		 * model.setColumnIdentifiers(colonne);
+		 * String[] riga = new String[3];
+		 * for(int i = 0; i<richieste.size(); i++) {
+		 * riga[0] = richieste.get(i).getProdotto();
+		 * riga[1] = richieste.get(i).getQuantita();
+		 * riga[2] = "Programma Donazione";
+		 * model.addRow(riga);
+		 * 
+		 * }
+		 * };
+		 */
 	}
-	
+
+	public void reindirizzamento() {
+		s.setVisible(true); // dovrebbe reindirizzare a schermata principale
+	}
 
 }

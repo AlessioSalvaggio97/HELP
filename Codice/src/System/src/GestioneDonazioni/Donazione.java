@@ -43,6 +43,7 @@ public class Donazione {
 		return scadenza;
 	}
 	
-	public void setScadenza(int scadenza) {
+	public void setScadenza(Date scadenza) {
 		this.scadenza = scadenza;
 	}
+}

@@ -107,31 +107,6 @@ public class DBMSInterface {
         }
     }
 
-    // GestioneDonazioni
-
-    public ArrayList<Richiesta> getRichieste(int ID_U){
-    	Statement st;
-    	ResultSet res;
-    	String query = "SELECT * FROM richiesta"; //aggiungere query
-    	ArrayList<Richiesta> richieste = new ArrayList<>(); 
-    	try {
-    		st=connDatabase.createStatement();
-    		res = st.executeQuery(query);
-    		if(!res.next()) {
-    			return null;
-    		}else {
-    			do {
-    				Richiesta r = new Richiesta(); //aggiungere attributi richiesta
-    				richieste.add(r);
-    			}while(res.next());
-    		}
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    	}
-    	return richieste;
-    }
-
     // VisualizzaDatiFamiglia
 
     public List<Famiglia> getElencoFamiglie() {
@@ -251,8 +226,47 @@ public class DBMSInterface {
         }
 
     }
+    
+    // GestioneDonazioni
 
-    // Gestione spedizione
+    public ArrayList<Richiesta> getRichieste(int ID_U) {
+        Statement st;
+        ResultSet res;
+        String query = "SELECT * FROM richiesta JOIN prodotto ON richiesta.ID_P=prodotto.ID_P";
+        ArrayList<Richiesta> richieste = new ArrayList<>();
+
+        try {
+            st = connDatabase.createStatement();
+            res = st.executeQuery(query);
+
+            while (res.next()) {
+                int ID_R = res.getInt("ID_R");
+                int ID_P = res.getInt("ID_P");
+                int quantita = res.getInt("quantità");
+                String nomeProdotto = res.getString("nome_prodotto");
+                String proprieta = res.getString("proprietà");
+
+                Richiesta r = new Richiesta(ID_R, ID_P, ID_U, quantita, nomeProdotto, proprieta);
+                richieste.add(r);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return richieste;
+    }
+
+
+
+    //Aggiornamento schema di distribuzione da continuare
+    public void AggiornaSchemaDistribuzione(){
+        Statement st;
+
+        String query="UPDATE schema_di_distr";
+    }
+    
+
+    // Gestione smistamenti (con conferma ricezione spedizione)
 
     public Spedizione getSpedizione() {
         Statement st;

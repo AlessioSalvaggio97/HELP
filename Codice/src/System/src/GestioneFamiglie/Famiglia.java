@@ -2,11 +2,14 @@ package GestioneFamiglie;
 
 import java.util.List;
 
+import GestioneFamiglie.Famiglia.Componente;
+
 public class Famiglia {
 
     private int ID_F;
     private int ID_U;
     private int componenti;
+    private List<Componente> listaComponenti;
 
     public Famiglia(int ID_F, int ID_U, int componenti) {
         this.ID_F = ID_F;
@@ -84,7 +87,7 @@ public class Famiglia {
         }
     }
 
-    public void setComponenti(List<Componente> componenti) {
+    public void setComponentiNum(List<Componente> componenti) {
         this.componenti = componenti.size();
     }
     
@@ -110,5 +113,13 @@ public class Famiglia {
 
     public void setComponenti(int componenti) {
         this.componenti = componenti;
+    }
+
+     public List<Componente> getListaComponenti() {
+        return listaComponenti;
+    }
+
+    public void setListaComponenti(List<Componente> componenti) {
+        this.listaComponenti = listaComponenti;
     }
 }
