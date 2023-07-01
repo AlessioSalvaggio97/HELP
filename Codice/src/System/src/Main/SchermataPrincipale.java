@@ -143,6 +143,27 @@ public class SchermataPrincipale extends JFrame {
     public void intDiocesi() {
     	JPanel gst_Smistamenti = new JPanel(new GridLayout(4,1,10,10));
     	initGstSmistamenti(gst_Smistamenti);
+	spedizioneArrivo.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		SchermataPrincipale.this.setVisible(false);
+        		GestoreRicezioneSpedizione ges_rs = new GestoreRicezioneSpedizione(SchermataPrincipale.this, u, db);
+        	}
+        });
+    	
+    	visualizzaSchema.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		SchermataPrincipale.this.setVisible(false);
+        		GestoreVisualizzaSchema ges_vs = new GestoreVisualizzaSchema(SchermataPrincipale.this, u, db);
+        	}
+        });
+    	
+    	confermaSmistamento.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		SchermataPrincipale.this.setVisible(false);
+        		GestoreConfermaSmistamento ges_cs = new GestoreConfermaSmistamento(SchermataPrincipale.this, u, db);
+        	}
+        });
+    	
     }
     
     private void initGstDonazioni(JPanel g) {
