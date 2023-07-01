@@ -1,6 +1,7 @@
 package Connectivity;
 
 import Autenticazione.ModuloLogin;
+import GestioneDonazioni.Richiesta;
 import Main.SchermataPrincipale;
 import GestioneFamiglie.Famiglia;
 import GestioneSmistamenti.GestoreConfermaSmistamento;
@@ -9,8 +10,10 @@ import GestioneSmistamenti.GestoreConfermaSmistamento.Smistamento;
 import javax.swing.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.sql.*;
 import java.util.List;
+import java.util.Map;
 
 public class DBMSInterface {
     ConnectionClass connClass = new ConnectionClass();
@@ -102,6 +105,106 @@ public class DBMSInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    // GestioneDonazioni
+
+    public ArrayList<Richiesta> getRichieste(int ID_U){
+    	Statement st;
+    	ResultSet res;
+    	String query = "SELECT * FROM richiesta"; //aggiungere query
+    	ArrayList<Richiesta> richieste = new ArrayList<>(); 
+    	try {
+    		st=connDatabase.createStatement();
+    		res = st.executeQuery(query);
+    		if(!res.next()) {
+    			return null;
+    		}else {
+    			do {
+    				Richiesta r = new Richiesta(); //aggiungere attributi richiesta
+    				richieste.add(r);
+    			}while(res.next());
+    		}
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	return richieste;
+    }
+
+    // VisualizzaDatiFamiglia
+
+    public List<Famiglia> getElencoFamiglie() {
+        List<Famiglia> famiglie = new ArrayList<>();
+        Statement st = null;
+        ResultSet rs = null;
+
+        try {
+            // Crea lo statement
+            st = connDatabase.createStatement();
+
+            // Esegui la query
+            String query = "SELECT * FROM famiglia JOIN componente ON famiglia.ID_F=componente.ID_F";
+            rs = st.executeQuery(query);
+
+            // Mappa le famiglie con i rispettivi componenti
+            Map<Integer, Famiglia> famiglieMap = new HashMap<>();
+
+            // Itera sui risultati e crea gli oggetti Famiglia e Componente
+            while (rs.next()) {
+                int ID_F = rs.getInt("ID_F");
+                int ID_U = rs.getInt("ID_U");
+                int componenti = rs.getInt("componenti");
+
+                Famiglia famiglia;
+
+                // Controlla se la famiglia è già presente nella mappa
+                if (famiglieMap.containsKey(ID_F)) {
+                    famiglia = famiglieMap.get(ID_F);
+                } else {
+                    famiglia = new Famiglia(ID_F, ID_U, componenti);
+                    famiglieMap.put(ID_F, famiglia);
+                }
+
+                // Crea l'oggetto Componente
+                String nome = rs.getString("nome");
+                String cognome = rs.getString("cognome");
+                String codice = rs.getString("codice");
+                String data = rs.getString("data");
+                String indirizzo = rs.getString("indirizzo");
+                String bisogni = rs.getString("bisogni");
+
+                Famiglia.Componente componente = famiglia.new Componente(nome, cognome, codice, data, indirizzo,
+                        bisogni);
+
+                // Aggiungi il componente all'oggetto Famiglia
+                famiglia.getListaComponenti().add(componente);
+            }
+
+            // Aggiungi le famiglie alla lista
+            famiglie.addAll(famiglieMap.values());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Chiudi le risorse
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return famiglie;
     }
 
     public void eliminaMembro(String codice) {
