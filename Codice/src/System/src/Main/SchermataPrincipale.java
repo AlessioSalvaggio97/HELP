@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
 
 public class SchermataPrincipale extends JFrame {
 
-    String titolo;
+    String titolo="HELP - Schermata Principale";
     int width = 1280;
     int heigth = 720;
     Container cont = this.getContentPane();
@@ -23,6 +23,7 @@ public class SchermataPrincipale extends JFrame {
     public SchermataPrincipale(Utente u, DBMSInterface db) {
         this.u = u;
         this.db = db;
+        this.setTitle(titolo);
         this.setSize(width, heigth);
         this.setResizable(false);
         this.setVisible(true);
@@ -82,13 +83,18 @@ public class SchermataPrincipale extends JFrame {
     // Azienda
     public void initAzienda() {
         JButton visualizzaRichieste = new JButton("Visualizza Richieste");
-
         JButton aggiungiProdotto = new JButton("Aggiungi Prodotto");
-
         JButton visualizzaStorico = new JButton("Visualizza storico");
-
         JButton modificaDonazione = new JButton("Modifica Donazione");
 
+        JPanel aziendaPnl = new JPanel();
+        aziendaPnl.setLayout(new GridLayout(4, 1, 10, 10));
+        aziendaPnl.add(visualizzaRichieste);
+        aziendaPnl.add(aggiungiProdotto);
+        aziendaPnl.add(visualizzaStorico);
+        aziendaPnl.add(modificaDonazione);
+
+        cont.add(aziendaPnl, BorderLayout.CENTER);
     }
 
     public void initDiocesi() {
@@ -143,12 +149,39 @@ public class SchermataPrincipale extends JFrame {
         JButton scaricaReport = new JButton("Scarica Report");
         JButton regFamiglia = new JButton("Registra famiglia");
         JButton elencoFamiglia = new JButton("Elenco famiglie");
+
+        JPanel poloPnl = new JPanel();
+        poloPnl.setLayout(new GridLayout(6, 1, 10, 10));
+        poloPnl.add(effettuaScarico);
+        poloPnl.add(sospendiPolo);
+        poloPnl.add(riabilitaPolo);
+        poloPnl.add(scaricaReport);
+        poloPnl.add(regFamiglia);
+        poloPnl.add(elencoFamiglia);
+
+        cont.add(poloPnl, BorderLayout.CENTER);
     }
 
     public void initAmministratore() {
         JButton invioNotifica = new JButton("Invio notifica");
         JButton regFamiglia = new JButton("Registra famiglia");
+        JButton visualizzaFamiglia = new JButton("Visualizza dati famiglia");
+        JButton visualizzaRichieste = new JButton("Visualizza richieste");
+        JButton modificaDonazione = new JButton("Modifica donazione");
+        JButton visualizzaStorico = new JButton("Visualizza storico donazioni");
+        JButton scaricaReport = new JButton("Scarica report");
 
+        JPanel amministratorePnl = new JPanel();
+        amministratorePnl.setLayout(new GridLayout(7, 1, 10, 10));
+        amministratorePnl.add(invioNotifica);
+        amministratorePnl.add(regFamiglia);
+        amministratorePnl.add(visualizzaFamiglia);
+        amministratorePnl.add(visualizzaRichieste);
+        amministratorePnl.add(modificaDonazione);
+        amministratorePnl.add(visualizzaStorico);
+        amministratorePnl.add(scaricaReport);
+
+        cont.add(amministratorePnl, BorderLayout.CENTER);
     }
 
     /*
