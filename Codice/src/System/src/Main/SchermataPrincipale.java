@@ -106,8 +106,9 @@ public class SchermataPrincipale extends JFrame {
         cont.add(footerPnl, BorderLayout.SOUTH);
     }
     
-    
-    public void initAzienda() {
+/* 
+	
+public void initAzienda() {
     	JPanel gst_Donazioni = new JPanel(new GridLayout(4,1,10,10));
     	initGstDonazioni(gst_Donazioni);
     	
@@ -139,7 +140,7 @@ public class SchermataPrincipale extends JFrame {
     	    	}
     	    });
     }
-    
+   */ 
     public void intDiocesi() {
     	JPanel gst_Smistamenti = new JPanel(new GridLayout(4,1,10,10));
     	initGstSmistamenti(gst_Smistamenti);
@@ -166,14 +167,15 @@ public class SchermataPrincipale extends JFrame {
     	
     }
     
-    private void initGstDonazioni(JPanel g) {
+    /*
+private void initGstDonazioni(JPanel g) {
     	g.add(visualizzaRichieste);
     	g.add(aggiungiProdotto);
     	g.add(visualizzaStorico);
     	g.add(modificaDonazione);
     }
-    
-    private void initGstSmistamenti(JPanel g) {
+    */
+private void initGstSmistamenti(JPanel g) {
     	g.add(spedizioneArrivo);
     	g.add(segnalaErrore);
     	g.add(visualizzaSchema);
