@@ -12,7 +12,7 @@ public class GestoreVisualizzaDatiFamiglia {
     private DBMSInterface db;
     private List<Famiglia> famiglie;
 
-    GestoreVisualizzaDatiFamiglia(SchermataPrincipale s, Utente u, DBMSInterface db) {
+    public GestoreVisualizzaDatiFamiglia(SchermataPrincipale s, Utente u, DBMSInterface db) {
         this.s = s;
         this.u = u;
         this.db = db;
