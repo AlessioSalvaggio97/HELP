@@ -1,88 +1,64 @@
 package GestioneDonazioni;
 
-import java.sql.Date;
-
 public class Donazione {
-	private int ID_D;
-	private int ID_P;
-	private int ID_M;
-	private int ID_U;
-	private Date data;
-	private int quantita_d;
-	private Date scadenza;
+	private int idD;
+	private int idP;
+	private int idM;
+	private int idU;
+	private String data;
+	private int quantitaD;
+	private String scadenza;
 	private String nomeProdotto;
-	
-	public Donazione(int ID_D, int ID_P, int quantita_d, Date scadenza, String nomeProdotto) {
-		this.ID_D = ID_D;
-		this.ID_P = ID_P;
-		this.ID_M = ID_M;
-		this.ID_U = ID_U;
+	private String proprieta;
+
+	public Donazione(int idD, int idP, int idM, int idU, String data, int quantitaD, String scadenza,
+			String nomeProdotto, String proprieta) {
+		this.idD = idD;
+		this.idP = idP;
+		this.idM = idM;
+		this.idU = idU;
 		this.data = data;
-		this.quantita_d = quantita_d;
+		this.quantitaD = quantitaD;
 		this.scadenza = scadenza;
 		this.nomeProdotto = nomeProdotto;
-	}
-	
-	public int getID_D() {
-		return ID_D;
-	}
-	
-	public void setID_D(int ID_D) {
-		this.ID_D = ID_D;
-	}
-	
-	
-	public int getID_P() {
-		return ID_P;
-	}
-	
-	public void setID_P(int ID_P) {
-		this.ID_P = ID_P;
+		this.proprieta = proprieta;
 	}
 
-	public int getID_M() {
-		return ID_M;
-	}
-	
-	public void setID_M(int ID_M) {
-		this.ID_M = ID_M;
+	public int getIdD() {
+		return idD;
 	}
 
-	public int getID_U() {
-		return ID_U;
+	public int getIdP() {
+		return idP;
+	}
+
+	public int getIdM() {
+		return idM;
+	}
+
+	public int getIdU() {
+		return idU;
 	}
 	
-	public void setID_U(int ID_U) {
-		this.ID_U = ID_U;
-	}
-	
-	public Date getData() {
+	public String getData() {
 		return data;
 	}
 	
-	public void setData(Date data) {
+	public void setData(String data) {
 		this.data = data;
 	}
 	
-	public int getQuantita_d() {
-		return quantita_d;
+	public int getQuantitaD() {
+		return quantitaD;
 	}
-	
-	public void setQuantita_d(int quantita_d) {
-		this.quantita_d = quantita_d;
-	}
-	
-	public Date getScadenza() {
+
+	public String getScadenza() {
 		return scadenza;
 	}
-	
-	public void setScadenza(Date scadenza) {
-		this.scadenza = scadenza;
-	}
-	
+
 	public String getNomeProdotto() {
-        return nomeProdotto;
-    }
+		return nomeProdotto;
+	}
 
     public void setNomeProdotto(String nomeProdotto) {
         this.nomeProdotto = nomeProdotto;

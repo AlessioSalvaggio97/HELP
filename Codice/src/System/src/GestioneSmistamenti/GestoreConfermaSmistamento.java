@@ -27,8 +27,9 @@ public class GestoreConfermaSmistamento {
 
     public void gestisciConfermaSmistamento(){
         smi = db.getSmistamento();
-
+        System.out.println("Gestisci Conferma Smistamneto");
         scConfSmi = new SchermataConfermaSmistamento(smi, this);
+        scConfSmi.setVisible(true);
     }
 
     public void chiudiSchermata() {

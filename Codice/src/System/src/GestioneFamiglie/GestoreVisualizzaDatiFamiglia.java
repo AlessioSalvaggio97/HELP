@@ -11,6 +11,8 @@ public class GestoreVisualizzaDatiFamiglia {
     private Utente u;
     private DBMSInterface db;
     private List<Famiglia> famiglie;
+    private VisualizzaDatiFamiglia vdf;
+    private Famiglia famiglia;
 
     public GestoreVisualizzaDatiFamiglia(SchermataPrincipale s, Utente u, DBMSInterface db) {
         this.s = s;
@@ -19,10 +21,15 @@ public class GestoreVisualizzaDatiFamiglia {
         gestisciVisualizzaDatiFamiglia();
     }
 
-    private void gestisciVisualizzaDatiFamiglia() {
+    public void gestisciVisualizzaDatiFamiglia() {
         famiglie = db.getElencoFamiglie();
 
+        vdf = new VisualizzaDatiFamiglia(famiglie, this);
         //da continuare
+    }
+
+    public void visualizza(Famiglia famiglia){
+
     }
 
 }

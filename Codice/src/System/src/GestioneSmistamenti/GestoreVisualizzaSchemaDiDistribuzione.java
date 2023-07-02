@@ -26,7 +26,7 @@ public class GestoreVisualizzaSchemaDiDistribuzione {
     public void chiudiSchermata() {
         // Chiude la schermata dello schema
         schDis.chiudiSchermata();
-
+        
         // Mostra la SchermataPrincipale
         s.setVisible(true);
     }

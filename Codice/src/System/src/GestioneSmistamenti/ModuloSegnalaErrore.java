@@ -16,7 +16,7 @@ public class ModuloSegnalaErrore extends JFrame {
 
     public void moduloSegnalaErrore(Spedizione spedizione, GestoreSegnalaErrore gestore) {
         this.gestore=gestore;
-        int numeroProdotti = spedizione.size();
+        int numeroProdotti = spedizione.size(); //da sistemare
 
         // Crea la finestra del modulo di segnalazione degli errori
         JFrame finestra = new JFrame("Modulo Segnalazione Errori");

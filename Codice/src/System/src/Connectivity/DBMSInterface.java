@@ -2,11 +2,14 @@ package Connectivity;
 
 import Autenticazione.ModuloLogin;
 import Autenticazione.Utente;
+import GestioneDonazioni.Donazione;
 import GestioneDonazioni.Richiesta;
+import GestioneDonazioni.Spedizione;
 import Main.SchermataPrincipale;
 import GestioneFamiglie.Famiglia;
 import GestionePolo.GestoreScaricoMagazzino;
 import GestionePolo.GestoreScaricoMagazzino.ProdottoInMagazzino;
+import GestionePolo.Report;
 import GestioneSmistamenti.GestoreConfermaSmistamento;
 import GestioneSmistamenti.GestoreConfermaSmistamento.Smistamento;
 
@@ -31,13 +34,16 @@ public class DBMSInterface {
         try {
             connDatabase = connClass.getConnection();
         } catch (Exception e) {
-            
+
             e.printStackTrace();
             System.out.println("Problema con la connessione");
-            
-            /*JOptionPane.showMessageDialog(login, "Problema con la connessione al DB, Ritenta", "Errore",
-                    JOptionPane.ERROR_MESSAGE);
-            connetti(login);*/
+
+            /*
+             * JOptionPane.showMessageDialog(login,
+             * "Problema con la connessione al DB, Ritenta", "Errore",
+             * JOptionPane.ERROR_MESSAGE);
+             * connetti(login);
+             */
         }
     }
 
@@ -138,30 +144,19 @@ public class DBMSInterface {
             String query = "SELECT * FROM famiglia JOIN componente ON famiglia.ID_F=componente.ID_F";
             rs = st.executeQuery(query);
 
-            // Mappa le famiglie con i rispettivi componenti
-            Map<Integer, Famiglia> famiglieMap = new HashMap<>();
-
             // Itera sui risultati e crea gli oggetti Famiglia e Componente
             while (rs.next()) {
                 int ID_F = rs.getInt("ID_F");
                 int ID_U = rs.getInt("ID_U");
                 int componenti = rs.getInt("componenti");
 
-                Famiglia famiglia;
-
-                // Controlla se la famiglia è già presente nella mappa
-                if (famiglieMap.containsKey(ID_F)) {
-                    famiglia = famiglieMap.get(ID_F);
-                } else {
-                    famiglia = new Famiglia(ID_F, ID_U, componenti);
-                    famiglieMap.put(ID_F, famiglia);
-                }
+                Famiglia famiglia = new Famiglia(ID_F, ID_U, componenti);
 
                 // Crea l'oggetto Componente
                 String nome = rs.getString("nome");
                 String cognome = rs.getString("cognome");
-                String codice = rs.getString("codice");
-                String data = rs.getString("data");
+                String codice = rs.getString("codice_fiscale");
+                String data = rs.getString("data_nascita");
                 String indirizzo = rs.getString("indirizzo");
                 String bisogni = rs.getString("bisogni");
 
@@ -170,10 +165,10 @@ public class DBMSInterface {
 
                 // Aggiungi il componente all'oggetto Famiglia
                 famiglia.getListaComponenti().add(componente);
-            }
 
-            // Aggiungi le famiglie alla lista
-            famiglie.addAll(famiglieMap.values());
+                // Aggiungi la famiglia alla lista
+                famiglie.add(famiglia);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -279,26 +274,67 @@ public class DBMSInterface {
         String query = "UPDATE schema_di_distr";
     }
 
+    // Modifica donazione
+    public List<Donazione> getDonazione() {
+        Statement st;
+        List<Donazione> donazioni = new ArrayList<>();
+
+        String query = "SELECT ID_D, donazione.ID_P, ID_M, donazione.ID_U, data, quantità_d, scadenza, nome_prodotto, proprietà FROM donazione JOIN prodotto WHERE donazione.ID_P = prodotto.ID_P";
+        try {
+            st = connDatabase.createStatement();
+            ResultSet resultSet = st.executeQuery(query);
+            while (resultSet.next()) {
+                int idD = resultSet.getInt("ID_D");
+                int idP = resultSet.getInt("ID_P");
+                int idM = resultSet.getInt("ID_M");
+                int idU = resultSet.getInt("ID_U");
+                String data = resultSet.getString("data");
+                int quantitaD = resultSet.getInt("quantità_d");
+                String scadenza = resultSet.getString("scadenza");
+                String nomeProdotto = resultSet.getString("nome_prodotto");
+                String proprieta = resultSet.getString("proprietà");
+
+                Donazione donazione = new Donazione(idD, idP, idM, idU, data, quantitaD, scadenza, nomeProdotto,
+                        proprieta);
+                donazioni.add(donazione);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle any potential exceptions here
+        } finally {
+            // Close the resultSet, statement, and connection if needed
+        }
+
+        return donazioni;
+    }
+
     // Gestione smistamenti (con conferma ricezione spedizione)
 
-    public Spedizione getSpedizione() {
+    public List<Spedizione> getSpedizionePrevista() {
         Statement st;
-        Spedizione spedizione;
+        List<Spedizione> spedizioni = new ArrayList<>();
 
-        // Seleziona la spedizione con ID più alto con i dettagli
-        String query = "SELECT nome_prodotto, proprietà, quantità_d, scadenza, stato, data_arrivo FROM spedizione JOIN donazione JOIN prodotto WHERE ID_Spe = (SELECT MAX(ID_Spe) FROM spedizione) AND donazione.ID_P = prodotto.ID_P";
+        // Seleziona le spedizioni previste con i dettagli
+        String query = "SELECT nome_prodotto, proprietà, quantità_d, scadenza, stato FROM spedizione JOIN donazione JOIN prodotto WHERE ID_Spe = (SELECT MAX(ID_Spe) FROM spedizione) AND donazione.ID_P = prodotto.ID_P";
         try {
             st = connDatabase.createStatement();
             ResultSet resultSet = st.executeQuery(query);
 
-            if (resultSet.next()) {
-                spedizione = new Spedizione();
-                spedizione.setNomeProdotto(resultSet.getString("nome_prodotto"));
-                spedizione.setProprieta(resultSet.getString("proprietà"));
-                spedizione.setQuantitaD(resultSet.getInt("quantità_d"));
-                spedizione.setScadenza(resultSet.getDate("scadenza"));
-                spedizione.setStato(resultSet.getString("stato"));
-                spedizione.setDataArrivo(resultSet.getDate("data_arrivo"));
+            while (resultSet.next()) {
+                String nomeProdotto = resultSet.getString("nome_prodotto");
+                String proprietà = resultSet.getString("proprietà");
+                int quantita = resultSet.getInt("quantità_d");
+                Date scadenza = resultSet.getDate("scadenza");
+                String stato = resultSet.getString("stato");
+
+                Spedizione spedizione = new Spedizione();
+                spedizione.setNomeProdotto(nomeProdotto);
+                spedizione.setProprietà(proprietà);
+                spedizione.setQuantita(quantita);
+                spedizione.setScadenza(scadenza);
+                spedizione.setStato(stato);
+
+                spedizioni.add(spedizione);
             }
 
             resultSet.close();
@@ -307,22 +343,26 @@ public class DBMSInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return spedizione;
+        return spedizioni;
     }
 
-    public void invioDatiRicezioneSpedizione(int ID_Spe, int ID_U) { // registra la quantità dei prodotti ricevuti e
-                                                                     // aggiorna i dati di magazzino
+    public void invioDatiRicezioneSpedizione(List<Spedizione> spedizioni, int ID_U) {
         Statement st;
-        int id_spe = ID_Spe;
         int id_u = ID_U;
 
-        String queryInvio = "UPDATE spedizione SET stato='Consegnato!' WHERE ID_Spe=" + id_spe;
-        // Aggiungere l'aggiornamento del magazzino
-        // String queryAggiorna = "UPDATE magazzino SET capienza_attuale = "
+        String queryAggiorna = "UPDATE magazzino SET capienza_attuale = ";
+
         try {
             st = connDatabase.createStatement();
-            st.executeUpdate(queryInvio);
 
+            for (Spedizione spedizione : spedizioni) {
+                int id_spe = spedizione.getID_Spe();
+                String queryInvio = "UPDATE spedizione SET stato='Consegnato!' WHERE ID_Spe=" + id_spe;
+
+                st.executeUpdate(queryInvio);
+
+                // update magazzino?
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -349,7 +389,7 @@ public class DBMSInterface {
 
     public void invioNotifica() {
         Statement st;
-        Spedizione spe = spedizione;
+        Spedizione spe;
 
         String queryInvio = "INSERT INTO notifica descrizione VALUES ('Segnalato errore di spedizione.')";
         // gestione da aggiungere
@@ -404,7 +444,7 @@ public class DBMSInterface {
         Statement st;
         List<Smistamento> smistamenti = new ArrayList<>();
 
-        String query = "SELECT ID_Smi, nome_prodotto, proprietà, quantità, scadenza, data_corrente, data_arrivo, stato FROM smistamento JOIN prodotto ON smistamento.ID_P = prodotto.ID_P WHERE stato='In transito!' ";
+        String query = "SELECT ID_Smi, nome_prodotto, proprietà, quantità_d, scadenza, data_corrente, data_arrivo, stato FROM smistamento JOIN prodotto ON smistamento.ID_P = prodotto.ID_P WHERE stato='In transito!' ";
 
         try {
             st = connDatabase.createStatement();
@@ -505,7 +545,7 @@ public class DBMSInterface {
             for (ProdottoInMagazzino prodotto : nuovoElencoProdotti) {
                 int nuovaQuantita = prodotto.getQuantita() - (int) sommaQuantita;
                 updateContiene.setInt(1, nuovaQuantita);
-                updateContiene.setInt(2, prodotto.getId());
+                // updateContiene.setInt(2, prodotto.getID_P());
                 updateContiene.setInt(3, prodotto.getIdMagazzino());
                 updateContiene.executeUpdate();
             }
@@ -523,6 +563,46 @@ public class DBMSInterface {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<Report> getDatiScarico(Utente u) {
+        List<Report> datiScarico = new ArrayList<>();
+
+        String query = "SELECT ID_Scarico, scarico.ID_P, nome_prodotto, proprietà, quantità_smist, data_scarico, ID_M FROM scarico JOIN prodotto ON scarico.ID_P = prodotto.ID_P";
+
+        if (!u.getRuolo().equals("Amministratore")) {
+            query += " WHERE scarico.ID_U = ?";
+        }
+
+        try (PreparedStatement stmt = connDatabase.prepareStatement(query)) {
+            if (!u.getRuolo().equals("Amministratore")) {
+                stmt.setInt(1, u.getID_U());
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String ID_Scarico = rs.getString("ID_Scarico");
+                String ID_P = rs.getString("scarico.ID_P");
+                String nome_prodotto = rs.getString("nome_prodotto");
+                String proprietà = rs.getString("proprietà");
+                int quantità_smist = rs.getInt("quantità_smist");
+                Date data_scarico = rs.getDate("data_scarico");
+                String ID_M = rs.getString("ID_M");
+
+                Report report = new Report(ID_Scarico, ID_P, nome_prodotto, proprietà, quantità_smist, data_scarico,
+                        ID_M);
+                datiScarico.add(report);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return datiScarico;
+    }
+
+    public Report scaricaReport(Utente u) {
+
     }
 
 }

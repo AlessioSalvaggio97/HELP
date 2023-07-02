@@ -1,6 +1,9 @@
 package GestioneSmistamenti;
 
 import Connectivity.DBMSInterface;
+
+import java.util.List;
+
 import Autenticazione.Utente;
 import Main.SchermataPrincipale;
 import GestioneDonazioni.Spedizione;
@@ -10,24 +13,27 @@ public class GestoreRicezioneSpedizioni {
     private Utente u;
     private DBMSInterface db;
     private SchermataConfermaRicezioneSpedizione scConfRic;
-    private Spedizione spedizione;
+    private List<Spedizione> spedizioni;
 
     public GestoreRicezioneSpedizioni(SchermataPrincipale s, Utente u, DBMSInterface db) {
         this.s = s;
         this.u = u;
         this.db = db;
-        scConfRic = new schermataConfermaRicezioneSpedizione(getSpedizione());
+        GestisciRicezioneSpedizioni();
+
+    }
+
+    public void GestisciRicezioneSpedizioni() {
+        spedizioni = db.getSpedizionePrevista();
+        scConfRic = new SchermataConfermaRicezioneSpedizione(spedizioni, this);
     }
 
     public void invioDati() { // registra la quantità dei prodotti ricevuti e aggiorna i dati di magazzino
-        db.invioDatiRicezioneSpedizione(spedizione.getId(), utente.getId());
+        db.invioDatiRicezioneSpedizione(spedizioni, u.getID_U());
+        s.setVisible(true);
     }
 
-    public Spedizione getSpedizione() {
-        return db.getSpedizione();
-    }
-
-    public DBMSInterface getDb (){
+    public DBMSInterface getDb() {
         return this.db;
     }
 

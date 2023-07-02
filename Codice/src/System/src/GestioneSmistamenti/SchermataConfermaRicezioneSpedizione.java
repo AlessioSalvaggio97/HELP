@@ -1,98 +1,64 @@
 package GestioneSmistamenti;
 
-// import GestioneDonazioni.Spedizione;
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import GestioneDonazioni.Spedizione;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class SchermataConfermaRicezioneSpedizione extends JFrame {
-    private int width = 700;
-    private int height = 420;
-    private JLabel nomeProdottoLabel;
-    private JLabel proprietaLabel;
-    private JLabel quantitaDLabel;
-    private JLabel scadenzaLabel;
-    private JLabel statoLabel;
-    private JLabel dataArrivoLabel;
-    private JButton confermaButton;
-    private JButton segnalaErroreButton;
-    private Spedizione spedizione;
-    // private Spedizione spedizione;
+    private List<Spedizione> spedizioni;
+    private GestoreRicezioneSpedizioni grs;
 
-    public SchermataConfermaRicezioneSpedizione(Spedizione spedizione) {
-        this.spedizione=spedizione;
+    public SchermataConfermaRicezioneSpedizione(List<Spedizione> spedizioni, GestoreRicezioneSpedizioni grs) {
+        this.spedizioni = spedizioni;
+        this.grs = grs;
         this.setTitle("Conferma Ricezione Spedizione");
-        this.setSize(width, height);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(null);
         initItems();
+        this.pack();
         this.setVisible(true);
-
     }
 
     public void initItems() {
-        // Imposta il layout del pannello
+        JPanel panel = new JPanel(new BorderLayout());
 
-        setLayout(new GridLayout(7, 2));
+        // Inizializza le colonne della tabella
+        String[] columns = {"Nome Prodotto", "Proprietà", "Quantità", "Stato"};
 
-        // Inizializza le etichette per le informazioni sulla spedizione
-        nomeProdottoLabel = new JLabel("Nome Prodotto:");
-        proprietaLabel = new JLabel("Proprietà:");
-        quantitaDLabel = new JLabel("Quantità:");
-        scadenzaLabel = new JLabel("Scadenza:");
-        statoLabel = new JLabel("Stato:");
-        dataArrivoLabel = new JLabel("Data Arrivo:");
+        // Crea il modello dei dati per la tabella
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
 
-        // Aggiunge le etichette al pannello
-        add(nomeProdottoLabel);
-        add(proprietaLabel);
-        add(quantitaDLabel);
-        add(scadenzaLabel);
-        add(statoLabel);
-        add(dataArrivoLabel);
+        // Aggiungi i dati delle spedizioni al modello
+        for (Spedizione spedizione : spedizioni) {
+            Object[] rowData = {
+                    spedizione.getNomeProdotto(),
+                    spedizione.getProprietà(),
+                    spedizione.getQuantita(),
+                    spedizione.getStato()
+            };
+            model.addRow(rowData);
+        }
 
-        /*
-         * setNomeProdotto(spedizione.getNomeProdotto());
-         * setProprieta(spedizione.getProprieta());
-         * setQuantitaD(spedizione.getQuantitaD());
-         * setScadenza(spedizione.getScadenza());
-         * setStato(spedizione.getStato());
-         * setDataArrivo(spedizione.getDataArrivo());
-         */
+        // Crea la tabella con il modello dei dati
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
         // Inizializza il pulsante di conferma ricezione spedizione
-        confermaButton = new JButton("Conferma ricezione spedizione");
+        JButton confermaButton = new JButton("Conferma ricezione spedizione");
         confermaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GestoreRicezioneSpedizioni.invioDati();
-
-                // da aggiungere ritorno a schermata principale
-                
-                // JFrame frame = (JFrame)
-                // SwingUtilities.getRoot(SchermataConfermaRicezioneSpedizione.this);
-                // frame.getContentPane().removeAll();
-                
-                // frame.revalidate();
+                grs.invioDati();
             }
         });
+        panel.add(confermaButton, BorderLayout.SOUTH);
 
-        // Aggiunge il pulsante al pannello
-        add(confermaButton);
-
-        // Inizializza il pulsante di segnala errore
-        segnalaErroreButton = new JButton("Segnala errore");
-        segnalaErroreButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GestoreSegnalaErrore segnalaErrore = new GestoreSegnalaErrore(GestoreRicezioneSpedizioni.getDb());
-            }
-        });
-
-        // Aggiunge il pulsante segnala errore
-        add(segnalaErroreButton);
+        // Aggiungi il pannello al frame
+        this.getContentPane().add(panel);
     }
-
 }
