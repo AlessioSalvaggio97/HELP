@@ -8,13 +8,17 @@ public class Spedizione {
     private int ID_U;
     private Date data_arrivo;
     private String stato;
+    private String nomeProdotto;
+    private int quantita;
 
-    public Spedizione(int ID_Spe, int ID_D, int ID_U, Date data_arrivo, String stato) {
+    public Spedizione(int ID_Spe, int ID_D, int ID_U, Date data_arrivo, String stato, String nomeProdotto, int quantita) {
         this.ID_Spe = ID_Spe;
         this.ID_D = ID_D;
         this.ID_U = ID_U;
         this.data_arrivo = data_arrivo;
         this.stato = stato;
+        this.nomeProdotto = nomeProdotto;
+        this.quantita = quantita;
     }
 
     public int getID_Spe() {
@@ -55,5 +59,21 @@ public class Spedizione {
 
     public void setStato(String stato) {
         this.stato = stato;
+    }
+
+    public String getNomeProdotto() {
+        return nomeProdotto;
+    }
+
+    public void setNomeProdotto(String nomeProdotto) {
+        this.nomeProdotto = nomeProdotto;
+    }
+
+    public int getQuantita() {
+        return quantita;
+    }
+
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
     }
 }
