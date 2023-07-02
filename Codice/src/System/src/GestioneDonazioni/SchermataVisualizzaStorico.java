@@ -3,6 +3,7 @@ package GestioneDonazioni;
 import java.awt.Container;
 import java.util.ArrayList;
 
+import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -16,15 +17,15 @@ public class SchermataVisualizzaStorico extends JFRame{
 	private Container cont = this.getContentPane();
 	private JButton chiudi;
 	private JTable table;
-	ArrayList<Donazione> donazioni;
+	ArrayList<Spedizione> spedizioni;
 	private GestoreVisualizzaStorico gest;
 
-	public SchermataVisualizzaStorico(ArrayList<Donazione> donazioni, GestoreVisualizzaStorico gest) {
+	public SchermataVisualizzaStorico(ArrayList<Spedizione> spedizioni, GestoreVisualizzaStorico gest) {
 		this.setTitle("Storico donazioni");
 		this.setSize(width, height);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		this.donazioni = donazioni;
+		this.spedizioni = spedizioni;
 		this.gest=gest;
 		initItems();
 		popolaTabella();
@@ -37,7 +38,7 @@ public class SchermataVisualizzaStorico extends JFRame{
 		tabellaDonazioni = new JTable();
 		tabellaDonazioni.setBounds(10, 11, 1244, 530);
 		this.setVisible(true);
-		JScrollPane scrollPane = new JScrollPane(tabellaDonazioni);
+		JScrollPane scrollPane = new JScrollPane(tabellaSpedizioni);
 		cont.add(scrollPane);
 
 		chiudi = new JButton("Chiudi");
@@ -52,24 +53,21 @@ public class SchermataVisualizzaStorico extends JFRame{
 
 	}
 
-	/*
-
 	private void popolaTabella() {
-		String[] columnNames = { "Nome Prodotto", "Proprietà", "Quantità" };
-		Object[][] data = new Object[richieste.size()][3];
+		String[] columnNames = { "Data", "Proprietà"};
+		Object[][] data = new Object[spedizioni.size()][3];
 
-		for (int i = 0; i < richieste.size(); i++) {
-			Richiesta richiesta = richieste.get(i);
-			data[i][0] = richiesta.getNomeProdotto();
-			data[i][1] = richiesta.getProprieta();
-			data[i][2] = richiesta.getQuantita();
+		for (int i = 0; i < spedizioni.size(); i++) {
+			Spedizione spedizione = spedizioni.get(i);
+			data[i][0] = spedizione.getData();
+			data[i][1] = spedizione.getProprieta();
 		}
 
-		tabellaRichieste.setModel(new DefaultTableModel(data, columnNames));
+		tabellaSpedizioni.setModel(new DefaultTableModel(data, columnNames));
 	}
 
-	public JTable getTabellaRichieste() {
-		return tabellaRichieste;
+	public JTable getTabellaSpedizioni() {
+		return tabellaSpedizioni;
 	}
 
 	*/

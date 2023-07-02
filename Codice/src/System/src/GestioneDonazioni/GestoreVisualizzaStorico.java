@@ -24,7 +24,7 @@ import java.util.ArrayList;
 	}
 
     public void visualizzaStorico(){
-        ArrayList<Donazione> donazioni = db.getDonazione(u.getID_U());
+        ArrayList<Spedizione> spedizioni = db.getSpedizione(u.getID_U());
         visStorico = new SchermataVisualizzaStorico();
 
 
