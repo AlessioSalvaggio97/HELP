@@ -3,6 +3,7 @@ package Connectivity;
 import Autenticazione.ModuloLogin;
 import Autenticazione.Utente;
 import GestioneDonazioni.Richiesta;
+import GestioneDonazioni.Spedizione;
 import Main.SchermataPrincipale;
 import GestioneFamiglie.Famiglia;
 import GestionePolo.GestoreScaricoMagazzino;
