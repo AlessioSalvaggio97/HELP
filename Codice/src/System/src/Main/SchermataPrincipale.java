@@ -2,8 +2,12 @@ package Main;
 
 import Autenticazione.Utente;
 import GestioneDonazioni.*;
+import GestioneFamiglie.GestoreRegistraFamiglia;
+import GestioneFamiglie.GestoreVisualizzaDatiFamiglia;
 import Connectivity.DBMSInterface;
 import GestioneSmistamenti.*;
+import GestionePolo.*;
+import Notifiche.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +16,7 @@ import java.awt.event.ActionListener;
 
 public class SchermataPrincipale extends JFrame {
 
-    String titolo="HELP - Schermata Principale";
+    String titolo = "HELP - Schermata Principale";
     int width = 1280;
     int heigth = 720;
     Container cont = this.getContentPane();
@@ -95,6 +99,34 @@ public class SchermataPrincipale extends JFrame {
         aziendaPnl.add(modificaDonazione);
 
         cont.add(aziendaPnl, BorderLayout.CENTER);
+
+        visualizzaRichieste.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreVisualizzaRichieste gvr = new GestoreVisualizzaRichieste(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        aggiungiProdotto.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreAggiungiProdotto gap = new GestoreAggiungiProdotto(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        visualizzaStorico.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreVisualizzaStorico gvs = new GestoreVisualizzaStorico(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        modificaDonazione.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreModificaDonazione gmd = new GestoreModificaDonazione(SchermataPrincipale.this, u, db);
+            }
+        });
     }
 
     public void initDiocesi() {
@@ -160,6 +192,48 @@ public class SchermataPrincipale extends JFrame {
         poloPnl.add(elencoFamiglia);
 
         cont.add(poloPnl, BorderLayout.CENTER);
+
+        effettuaScarico.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreScaricoMagazzino gsm = new GestoreScaricoMagazzino(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        sospendiPolo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreSospendiPolo gsp = new GestoreSospendiPolo(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        riabilitaPolo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreRiabilitaPolo grp = new GestoreRiabilitaPolo(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        scaricaReport.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreScaricaReport gsr = new GestoreScaricaReport(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        regFamiglia.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreRegistraFamiglia grf = new GestoreRegistraFamiglia(SchermataPrincipale.this, u, db);
+            }
+        });
+
+        elencoFamiglia.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                GestoreVisualizzaDatiFamiglia gvdf = new GestoreVisualizzaDatiFamiglia(SchermataPrincipale.this, u, db);
+            }
+        });
     }
 
     public void initAmministratore() {
@@ -181,7 +255,43 @@ public class SchermataPrincipale extends JFrame {
         amministratorePnl.add(visualizzaStorico);
         amministratorePnl.add(scaricaReport);
 
+        invioNotifica.addActionListener(e -> {
+            SchermataPrincipale.this.setVisible(false);
+            GestoreInvioNotifiche gin = new GestoreInvioNotifiche(SchermataPrincipale.this, u, db);
+        });
+
+        regFamiglia.addActionListener(e -> {
+            SchermataPrincipale.this.setVisible(false);
+            GestoreRegistraFamiglia grf = new GestoreRegistraFamiglia(SchermataPrincipale.this, u, db);
+        });
+
+        visualizzaFamiglia.addActionListener(e -> {
+            SchermataPrincipale.this.setVisible(false);
+            GestoreVisualizzaDatiFamiglia gvdf = new GestoreVisualizzaDatiFamiglia(SchermataPrincipale.this, u, db);
+        });
+
+        visualizzaRichieste.addActionListener(e -> {
+            SchermataPrincipale.this.setVisible(false);
+            GestoreVisualizzaRichieste gvr = new GestoreVisualizzaRichieste(SchermataPrincipale.this, u, db);
+        });
+
+        modificaDonazione.addActionListener(e -> {
+            SchermataPrincipale.this.setVisible(false);
+            GestoreModificaDonazione gmd = new GestoreModificaDonazione(SchermataPrincipale.this, u, db);
+        });
+
+        visualizzaStorico.addActionListener(e -> {
+            SchermataPrincipale.this.setVisible(false);
+            GestoreVisualizzaStorico gvs = new GestoreVisualizzaStorico(SchermataPrincipale.this, u, db);
+        });
+
+        scaricaReport.addActionListener(e -> {
+            SchermataPrincipale.this.setVisible(false);
+            GestoreScaricaReport gsr = new GestoreScaricaReport(SchermataPrincipale.this, u, db);
+        });
+
         cont.add(amministratorePnl, BorderLayout.CENTER);
+
     }
 
     /*

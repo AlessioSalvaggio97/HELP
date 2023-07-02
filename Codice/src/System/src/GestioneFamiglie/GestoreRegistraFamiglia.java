@@ -16,7 +16,6 @@ public class GestoreRegistraFamiglia {
     private SchermataPrincipale s;
     private Utente u;
     private DBMSInterface db;
-    private RegistraFamiglia rf;
     private ModuloNumeroComponenti modNum;
     private int num;
     private ModuloRegistraFamiglia modReg;

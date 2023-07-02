@@ -84,6 +84,7 @@ public class ModuloLogin extends JFrame {
 
 	public void reindirizzamento(Utente utente, DBMSInterface db) {
 		sc = new SchermataPrincipale(utente, db);
+		this.setVisible(false);
 	}
 
 	public JButton getAccedi() {
