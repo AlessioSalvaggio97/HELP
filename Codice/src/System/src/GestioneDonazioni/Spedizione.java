@@ -101,4 +101,11 @@ public class Spedizione {
     public void setScadenza(Date scadenza) {
         this.scadenza = scadenza;
     }
+
+    @Override
+    public String toString() {
+        return "Spedizione [ID_Spe=" + ID_Spe + ", ID_D=" + ID_D + ", ID_U=" + ID_U + ", data_arrivo=" + data_arrivo
+                + ", stato=" + stato + ", nomeProdotto=" + nomeProdotto + ", quantita=" + quantita + ", proprietà="
+                + proprietà + ", scadenza=" + scadenza + "]";
+    }
 }

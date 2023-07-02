@@ -133,12 +133,10 @@ public class SchermataPrincipale extends JFrame {
         System.out.println("initDiocesi");
         // Diocesi o Polo
         JButton spedizioneArrivo = new JButton("Visualizza spedizione in arrivo");
-        JButton segnalaErrore = new JButton("Segnala errore");
         JButton visualizzaSchema = new JButton("Visualizza Schema");
         JButton confermaSmistamento = new JButton("Conferma smistamento");
 
         spedizioneArrivo.setVisible(true);
-        segnalaErrore.setVisible(true);
         visualizzaSchema.setVisible(true);
         confermaSmistamento.setVisible(true);
 
@@ -167,7 +165,6 @@ public class SchermataPrincipale extends JFrame {
         JPanel gestioneSmistamentiPnl = new JPanel();
         gestioneSmistamentiPnl.setLayout(new GridLayout(4, 1, 10, 10));
         gestioneSmistamentiPnl.add(spedizioneArrivo);
-        gestioneSmistamentiPnl.add(segnalaErrore);
         gestioneSmistamentiPnl.add(visualizzaSchema);
         gestioneSmistamentiPnl.add(confermaSmistamento);
         cont.add(gestioneSmistamentiPnl, BorderLayout.CENTER);

@@ -2,6 +2,7 @@ package GestioneSmistamenti;
 
 import Autenticazione.Utente;
 import Connectivity.DBMSInterface;
+import GestioneDonazioni.Spedizione;
 import Main.SchermataPrincipale;
 
 import javax.swing.*;
@@ -17,10 +18,10 @@ public class GestoreSegnalaErrore {
     private Spedizione spedizione;
     ModuloSegnalaErrore modulo;
 
-    public GestoreSegnalaErrore(Spedizione spedizione) {
+    public GestoreSegnalaErrore(SchermataPrincipale s, Utente u, DBMSInterface db) {
         this.s = s;
         this.u = u;
-        this.db = db; // da gestire schermata, utente e db
+        this.db = db;
         this.spedizione = spedizione;
         gestisciSegnalaErrore();
     }

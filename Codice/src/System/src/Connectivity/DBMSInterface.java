@@ -32,13 +32,16 @@ public class DBMSInterface {
         try {
             connDatabase = connClass.getConnection();
         } catch (Exception e) {
-            
+
             e.printStackTrace();
             System.out.println("Problema con la connessione");
-            
-            /*JOptionPane.showMessageDialog(login, "Problema con la connessione al DB, Ritenta", "Errore",
-                    JOptionPane.ERROR_MESSAGE);
-            connetti(login);*/
+
+            /*
+             * JOptionPane.showMessageDialog(login,
+             * "Problema con la connessione al DB, Ritenta", "Errore",
+             * JOptionPane.ERROR_MESSAGE);
+             * connetti(login);
+             */
         }
     }
 
@@ -282,24 +285,31 @@ public class DBMSInterface {
 
     // Gestione smistamenti (con conferma ricezione spedizione)
 
-    public Spedizione getSpedizione() {
+    public List<Spedizione> getSpedizionePrevista() {
         Statement st;
-        Spedizione spedizione;
+        List<Spedizione> spedizioni = new ArrayList<>();
 
-        // Seleziona la spedizione con ID più alto con i dettagli
-        String query = "SELECT nome_prodotto, proprietà, quantità_d, scadenza, stato, data_arrivo FROM spedizione JOIN donazione JOIN prodotto WHERE ID_Spe = (SELECT MAX(ID_Spe) FROM spedizione) AND donazione.ID_P = prodotto.ID_P";
+        // Seleziona le spedizioni previste con i dettagli
+        String query = "SELECT nome_prodotto, proprietà, quantità_d, scadenza, stato FROM spedizione JOIN donazione JOIN prodotto WHERE ID_Spe = (SELECT MAX(ID_Spe) FROM spedizione) AND donazione.ID_P = prodotto.ID_P";
         try {
             st = connDatabase.createStatement();
             ResultSet resultSet = st.executeQuery(query);
 
-            if (resultSet.next()) {
-                spedizione = new Spedizione();
-                spedizione.setNomeProdotto(resultSet.getString("nome_prodotto"));
-                spedizione.setProprieta(resultSet.getString("proprietà"));
-                spedizione.setQuantitaD(resultSet.getInt("quantità_d"));
-                spedizione.setScadenza(resultSet.getDate("scadenza"));
-                spedizione.setStato(resultSet.getString("stato"));
-                spedizione.setDataArrivo(resultSet.getDate("data_arrivo"));
+            while (resultSet.next()) {
+                String nomeProdotto = resultSet.getString("nome_prodotto");
+                String proprietà = resultSet.getString("proprietà");
+                int quantita = resultSet.getInt("quantità_d");
+                Date scadenza = resultSet.getDate("scadenza");
+                String stato = resultSet.getString("stato");
+
+                Spedizione spedizione = new Spedizione();
+                spedizione.setNomeProdotto(nomeProdotto);
+                spedizione.setProprietà(proprietà);
+                spedizione.setQuantita(quantita);
+                spedizione.setScadenza(scadenza);
+                spedizione.setStato(stato);
+
+                spedizioni.add(spedizione);
             }
 
             resultSet.close();
@@ -308,22 +318,26 @@ public class DBMSInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return spedizione;
+        return spedizioni;
     }
 
-    public void invioDatiRicezioneSpedizione(int ID_Spe, int ID_U) { // registra la quantità dei prodotti ricevuti e
-                                                                     // aggiorna i dati di magazzino
+    public void invioDatiRicezioneSpedizione(List<Spedizione> spedizioni, int ID_U) {
         Statement st;
-        int id_spe = ID_Spe;
         int id_u = ID_U;
 
-        String queryInvio = "UPDATE spedizione SET stato='Consegnato!' WHERE ID_Spe=" + id_spe;
-        // Aggiungere l'aggiornamento del magazzino
-        // String queryAggiorna = "UPDATE magazzino SET capienza_attuale = "
+        String queryAggiorna = "UPDATE magazzino SET capienza_attuale = ";
+
         try {
             st = connDatabase.createStatement();
-            st.executeUpdate(queryInvio);
 
+            for (Spedizione spedizione : spedizioni) {
+                int id_spe = spedizione.getID_Spe();
+                String queryInvio = "UPDATE spedizione SET stato='Consegnato!' WHERE ID_Spe=" + id_spe;
+
+                st.executeUpdate(queryInvio);
+
+                //update magazzino?
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -405,7 +419,7 @@ public class DBMSInterface {
         Statement st;
         List<Smistamento> smistamenti = new ArrayList<>();
 
-        String query = "SELECT ID_Smi, nome_prodotto, proprietà, quantità, scadenza, data_corrente, data_arrivo, stato FROM smistamento JOIN prodotto ON smistamento.ID_P = prodotto.ID_P WHERE stato='In transito!' ";
+        String query = "SELECT ID_Smi, nome_prodotto, proprietà, quantità_d, scadenza, data_corrente, data_arrivo, stato FROM smistamento JOIN prodotto ON smistamento.ID_P = prodotto.ID_P WHERE stato='In transito!' ";
 
         try {
             st = connDatabase.createStatement();
