@@ -18,6 +18,7 @@ public class GestoreLogin {
 	private String[] credenzialiInserite;
 	private String[] credenzialiCorrette;
 	private Utente utente;
+	private PannelloErroreCredenziali pEr;
 
 	public GestoreLogin(DBMSInterface db) {
 		this.db = db;
@@ -50,10 +51,10 @@ public class GestoreLogin {
 
 				modLog.reindirizzamento(utente, db);
 			} else {
-				System.out.println(passwordInserita);
-				System.out.println("Credenziali errate");
+				pEr = new PannelloErroreCredenziali();
 			}
-		} else {System.out.println("Utente non trovato");
+		} else {
+			pEr = new PannelloErroreCredenziali();
 		}
 
 	}

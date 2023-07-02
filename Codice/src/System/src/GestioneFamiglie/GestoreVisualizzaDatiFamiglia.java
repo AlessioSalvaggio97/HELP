@@ -25,7 +25,7 @@ public class GestoreVisualizzaDatiFamiglia {
         famiglie = db.getElencoFamiglie();
 
         vdf = new VisualizzaDatiFamiglia(famiglie, this);
-        //da continuare
+        vdf.setVisible(true);
     }
 
     public void visualizza(Famiglia famiglia){

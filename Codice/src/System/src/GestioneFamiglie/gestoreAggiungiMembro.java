@@ -1,5 +1,6 @@
 package GestioneFamiglie;
 
-public class gestoreAggiungiMembro {
-    
+public class GestoreAggiungiMembro {
+    private VisualizzaDatiFamiglia vf;
+    private DBMSInterface db;
 }

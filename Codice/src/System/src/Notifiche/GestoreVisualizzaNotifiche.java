@@ -32,3 +32,4 @@ public class GestoreVisualizzaNotifiche {
 		visNotifiche = new SchermataVisualizzaNotifiche(notifiche, this);
 		visNotifiche.setVisible(true);
     }
+}
