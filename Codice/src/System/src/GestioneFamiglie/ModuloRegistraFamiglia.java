@@ -35,6 +35,7 @@ public class ModuloRegistraFamiglia extends JFrame {
     private JButton conferma;
     private JList<String> lista;
     private List<Famiglia.Componente> membriFamiglia;
+    private SchermataConferma schConf;
 
     public ModuloRegistraFamiglia(int numComp) {
         this.nome = new JTextField(20);
@@ -157,6 +158,9 @@ public class ModuloRegistraFamiglia extends JFrame {
                         data.getText(), indirizzo.getText(), bisogni.getText());
 
                 membriFamiglia.add(membroFamiglia);
+                
+                schConf = new SchermataConferma("Famiglia registrata con successo!");
+                
             }
 
         });
