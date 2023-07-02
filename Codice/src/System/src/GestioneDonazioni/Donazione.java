@@ -1,80 +1,112 @@
 package GestioneDonazioni;
 
 public class Donazione {
-	private int idD;
-	private int idP;
-	private int idM;
-	private int idU;
-	private String data;
-	private int quantitaD;
-	private String scadenza;
-	private String nomeProdotto;
-	private String proprieta;
+    private int ID_D;
+    private int ID_P;
+    private int ID_M;
+    private int ID_U;
+    private String data;
+    private int quantita_d;
+    private String scadenza;
+    private String nomeProdotto;
+    private String proprietà;
 
-	public Donazione(int idD, int idP, int idM, int idU, String data, int quantitaD, String scadenza,
-			String nomeProdotto, String proprieta) {
-		this.idD = idD;
-		this.idP = idP;
-		this.idM = idM;
-		this.idU = idU;
-		this.data = data;
-		this.quantitaD = quantitaD;
-		this.scadenza = scadenza;
-		this.nomeProdotto = nomeProdotto;
-		this.proprieta = proprieta;
-	}
+    public Donazione(int ID_D, int ID_P, int ID_M, int ID_U, String data, int quantita_d, String scadenza, String nomeProdotto, String proprietà) {
+        this.ID_D = ID_D;
+        this.ID_P = ID_P;
+        this.ID_M = ID_M;
+        this.ID_U = ID_U;
+        this.data = data;
+        this.quantita_d = quantita_d;
+        this.scadenza = scadenza;
+        this.nomeProdotto = nomeProdotto;
+        this.proprietà = proprietà;
+    }
 
-	public int getIdD() {
-		return idD;
-	}
+    public int getID_D() {
+        return ID_D;
+    }
 
-	public int getIdP() {
-		return idP;
-	}
+    public void setID_D(int ID_D) {
+        this.ID_D = ID_D;
+    }
 
-	public int getIdM() {
-		return idM;
-	}
+    public int getID_P() {
+        return ID_P;
+    }
 
-	public int getIdU() {
-		return idU;
-	}
-	
-	public String getData() {
-		return data;
-	}
-	
-	public void setData(String data) {
-		this.data = data;
-	}
-	
-	public int getQuantitaD() {
-		return quantitaD;
-	}
+    public void setID_P(int ID_P) {
+        this.ID_P = ID_P;
+    }
 
-	public String getScadenza() {
-		return scadenza;
-	}
+    public int getID_M() {
+        return ID_M;
+    }
 
-	public String getNomeProdotto() {
-		return nomeProdotto;
-	}
+    public void setID_M(int ID_M) {
+        this.ID_M = ID_M;
+    }
+
+    public int getID_U() {
+        return ID_U;
+    }
+
+    public void setID_U(int ID_U) {
+        this.ID_U = ID_U;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public int getQuantita_d() {
+        return quantita_d;
+    }
+
+    public void setQuantita_d(int quantita_d) {
+        this.quantita_d = quantita_d;
+    }
+
+    public String getScadenza() {
+        return scadenza;
+    }
+
+    public void setScadenza(String scadenza) {
+        this.scadenza = scadenza;
+    }
+
+    public String getNomeProdotto() {
+        return nomeProdotto;
+    }
 
     public void setNomeProdotto(String nomeProdotto) {
         this.nomeProdotto = nomeProdotto;
     }
 
+    public String getProprietà() {
+        return proprietà;
+    }
 
-	 public String toString() {
+    public void setProprietà(String proprietà) {
+        this.proprietà = proprietà;
+    }
+
+	@Override
+    public String toString() {
         return "Donazione{" +
                 "ID_D=" + ID_D +
                 ", ID_P=" + ID_P +
-				", ID_M=" + ID_M +
-				", ID_U=" + ID_U +
-				", data='" + data + '\'' +
-                ", quantita=" + quantita +
+                ", ID_M=" + ID_M +
+                ", ID_U=" + ID_U +
+                ", data='" + data + '\'' +
+                ", quantita_d=" + quantita_d +
                 ", scadenza='" + scadenza + '\'' +
-				", nomeProdotto='" + nomeProdotto + '\'' +
+                ", nomeProdotto='" + nomeProdotto + '\'' +
+                ", proprietà='" + proprietà + '\'' +
                 '}';
     }
 }

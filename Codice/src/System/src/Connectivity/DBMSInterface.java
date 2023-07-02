@@ -3,6 +3,8 @@ package Connectivity;
 import Autenticazione.ModuloLogin;
 import Autenticazione.Utente;
 import GestioneDonazioni.Donazione;
+import GestioneDonazioni.GestoreAggiungiProdotto;
+import GestioneDonazioni.GestoreAggiungiProdotto.Prodotto;
 import GestioneDonazioni.Richiesta;
 import GestioneDonazioni.Spedizione;
 import Main.SchermataPrincipale;
@@ -439,6 +441,36 @@ public class DBMSInterface {
         return schema;
     }
 
+    // Gestione donazioni - Aggiungi prodotto
+
+    public List<Prodotto> getLista(int ID_U, GestoreAggiungiProdotto gap) {
+        List<Prodotto> listaProdotti = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM prodotto WHERE prodotto.ID_U NOT IN (SELECT azienda.ID_U FROM azienda WHERE ID_U = ?) OR ID_U IS NULL";
+            PreparedStatement statement = connDatabase.prepareStatement(query);
+            statement.setInt(1, ID_U);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Prodotto prodotto = gap.new Prodotto();
+                prodotto.setID_P(resultSet.getInt("ID_P"));
+                prodotto.setNome_prodotto(resultSet.getString("nome_prodotto"));
+                prodotto.setProprietà(resultSet.getString("proprietà"));
+                prodotto.setID_U(resultSet.getInt("ID_U"));
+
+                listaProdotti.add(prodotto);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return listaProdotti;
+    }
+
     // GestoreConfermaSmistamento
     public List<GestoreConfermaSmistamento.Smistamento> getSmistamento() {
         Statement st;
@@ -494,7 +526,7 @@ public class DBMSInterface {
     public List<ProdottoInMagazzino> getProdottiMagazzino(GestoreScaricoMagazzino gest) {
         List<ProdottoInMagazzino> prodotti = new ArrayList<>();
         String query = "SELECT nome_prodotto, proprietà, quantità, magazzino.ID_M, capienza_max, capienza_attuale, magazzino.ID_U, prodotto.ID_P FROM magazzino JOIN contiene JOIN prodotto ON magazzino.ID_M=contiene.ID_M AND prodotto.ID_P=contiene.ID_P";
-        
+
         ProdottoInMagazzino prodotto;
 
         try {
@@ -601,7 +633,6 @@ public class DBMSInterface {
         return datiScarico;
     }
 
-    //da continuare public Report scaricaReport(Utente u) {}
-
+    // da continuare public Report scaricaReport(Utente u) {}
 
 }
