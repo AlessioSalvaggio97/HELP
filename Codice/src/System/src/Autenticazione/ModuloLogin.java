@@ -19,7 +19,6 @@ public class ModuloLogin extends JFrame {
 	int width = 1280;
 	int height = 720;
 	private JTextField email;
-	private JPasswordField password;
 	private JButton accedi;
 	private JButton recuperaPassword;
 	private JPasswordField passwordField;
@@ -72,6 +71,14 @@ public class ModuloLogin extends JFrame {
 		// Pulsante recuperaPassword
 		recuperaPassword = new JButton("Recupera Password");
 		recuperaPassword.setBounds(570, 361, 196, 30);
+
+		recuperaPassword.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GestoreRecuperoPassword gr = new GestoreRecuperoPassword();
+				ModuloLogin.this.dispose();
+			}
+		});
 
 		panel.add(emaillbl);
 		panel.add(email);
