@@ -29,7 +29,7 @@ public class GestoreAggiungiProdotto {
         
         listaProdottiSelezionabili = db.getLista(u.getID_U(),this);
 
-        listaProdottiSelezionabili.get(1).toString();
+        System.out.println(listaProdottiSelezionabili.get(1).getNome_prodotto());
 
         modAggiungi = new ModuloAggiungiProdotto(listaProdottiSelezionabili, this);
         modAggiungi.setVisible(true);
