@@ -9,6 +9,7 @@ import Main.SchermataPrincipale;
 import GestioneFamiglie.Famiglia;
 import GestionePolo.GestoreScaricoMagazzino;
 import GestionePolo.GestoreScaricoMagazzino.ProdottoInMagazzino;
+import GestionePolo.Report;
 import GestioneSmistamenti.GestoreConfermaSmistamento;
 import GestioneSmistamenti.GestoreConfermaSmistamento.Smistamento;
 
@@ -562,6 +563,46 @@ public class DBMSInterface {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<Report> getDatiScarico(Utente u) {
+        List<Report> datiScarico = new ArrayList<>();
+
+        String query = "SELECT ID_Scarico, scarico.ID_P, nome_prodotto, proprietà, quantità_smist, data_scarico, ID_M FROM scarico JOIN prodotto ON scarico.ID_P = prodotto.ID_P";
+
+        if (!u.getRuolo().equals("Amministratore")) {
+            query += " WHERE scarico.ID_U = ?";
+        }
+
+        try (PreparedStatement stmt = connDatabase.prepareStatement(query)) {
+            if (!u.getRuolo().equals("Amministratore")) {
+                stmt.setInt(1, u.getID_U());
+            }
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String ID_Scarico = rs.getString("ID_Scarico");
+                String ID_P = rs.getString("scarico.ID_P");
+                String nome_prodotto = rs.getString("nome_prodotto");
+                String proprietà = rs.getString("proprietà");
+                int quantità_smist = rs.getInt("quantità_smist");
+                Date data_scarico = rs.getDate("data_scarico");
+                String ID_M = rs.getString("ID_M");
+
+                Report report = new Report(ID_Scarico, ID_P, nome_prodotto, proprietà, quantità_smist, data_scarico,
+                        ID_M);
+                datiScarico.add(report);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return datiScarico;
+    }
+
+    public Report scaricaReport(Utente u) {
+
     }
 
 }
