@@ -3,6 +3,9 @@ package GestioneSmistamenti;
 // import GestioneDonazioni.Spedizione;
 
 import javax.swing.*;
+
+import GestioneDonazioni.Spedizione;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

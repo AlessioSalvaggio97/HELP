@@ -46,6 +46,7 @@ public class GestoreLogin {
 				utente.setIndirizzo(indirizzo);
 				utente.setRuolo(ruolo);
 				utente.setTelefono(telefono);
+				utente.setEmail(email);
 
 				modLog.reindirizzamento(utente, db);
 			} else {

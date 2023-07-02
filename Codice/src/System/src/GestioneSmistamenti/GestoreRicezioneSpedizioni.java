@@ -16,6 +16,12 @@ public class GestoreRicezioneSpedizioni {
         this.s = s;
         this.u = u;
         this.db = db;
+        GestisciRicezioneSpedizioni();
+
+    }
+
+    public void GestisciRicezioneSpedizioni() {
+        db.getSpedizionePrevista();
         scConfRic = new schermataConfermaRicezioneSpedizione(getSpedizione());
     }
 
@@ -27,7 +33,7 @@ public class GestoreRicezioneSpedizioni {
         return db.getSpedizione();
     }
 
-    public DBMSInterface getDb (){
+    public DBMSInterface getDb() {
         return this.db;
     }
 
