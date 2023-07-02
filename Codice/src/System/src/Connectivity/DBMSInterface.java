@@ -494,7 +494,7 @@ public class DBMSInterface {
     public List<ProdottoInMagazzino> getProdottiMagazzino(GestoreScaricoMagazzino gest) {
         List<ProdottoInMagazzino> prodotti = new ArrayList<>();
         String query = "SELECT nome_prodotto, proprietà, quantità, magazzino.ID_M, capienza_max, capienza_attuale, magazzino.ID_U, prodotto.ID_P FROM magazzino JOIN contiene JOIN prodotto ON magazzino.ID_M=contiene.ID_M AND prodotto.ID_P=contiene.ID_P";
-        gest = new GestoreScaricoMagazzino(null, null, null);
+        
         ProdottoInMagazzino prodotto;
 
         try {
@@ -601,8 +601,7 @@ public class DBMSInterface {
         return datiScarico;
     }
 
-    public Report scaricaReport(Utente u) {
+    //da continuare public Report scaricaReport(Utente u) {}
 
-    }
 
 }

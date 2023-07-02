@@ -29,6 +29,8 @@ public class GestoreScaricoMagazzino {
     public void gestisciScarico() {
         elencoProdotti = db.getProdottiMagazzino(this); // prodotti presenti in magazzino
 
+        elencoProdotti.get(1).toString();
+
         modSca = new ModuloScaricoMagazzino(elencoProdotti, this);
 
     }

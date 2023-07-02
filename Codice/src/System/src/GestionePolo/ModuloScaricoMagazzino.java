@@ -13,11 +13,13 @@ import GestionePolo.GestoreScaricoMagazzino.ProdottoInMagazzino;
 public class ModuloScaricoMagazzino extends JFrame {
     private JTable table;
     private DefaultTableModel tableModel;
-    private JTextField quantitaField;
+    private List<JTextField> quantitaFields;
     private JButton invioButton;
     private GestoreScaricoMagazzino gestore;
+    private List<ProdottoInMagazzino> elencoProdotti;
 
     public ModuloScaricoMagazzino(List<ProdottoInMagazzino> elencoProdotti, GestoreScaricoMagazzino gestore) {
+        this.elencoProdotti=elencoProdotti;
         this.gestore = gestore;
 
         // Configura il JFrame
@@ -44,13 +46,18 @@ public class ModuloScaricoMagazzino extends JFrame {
 
         // Crea il pannello per inserire la quantità e il pulsante di invio
         JPanel inputPanel = new JPanel(new FlowLayout());
-        quantitaField = new JTextField(10);
-        inputPanel.add(new JLabel("Quantità:"));
-        inputPanel.add(quantitaField);
+        quantitaFields = new ArrayList<>();
+        for (int i = 0; i < elencoProdotti.size(); i++) {
+            JTextField quantitaField = new JTextField(10);
+            quantitaFields.add(quantitaField);
+            inputPanel.add(new JLabel("Quantità " + elencoProdotti.get(i).getNomeProdotto() + ":"));
+            inputPanel.add(quantitaField);
+        }
         invioButton = new JButton("Invio");
         invioButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                gestore.isMore(getNuoviProdotti());
+                updateQuantitaProdotti();
+                gestore.isMore(elencoProdotti);
             }
         });
         inputPanel.add(invioButton);
@@ -60,34 +67,11 @@ public class ModuloScaricoMagazzino extends JFrame {
         setVisible(true);
     }
 
-    private List<ProdottoInMagazzino> getNuoviProdotti() {
-        List<ProdottoInMagazzino> prodotti = new ArrayList<>();
-
+    private void updateQuantitaProdotti() {
         for (int i = 0; i < table.getRowCount(); i++) {
-            String nomeProdotto = table.getValueAt(i, 0).toString();
-            String proprieta = table.getValueAt(i, 1).toString();
-            int quantita = Integer.parseInt(table.getValueAt(i, 2).toString());
-            int idMagazzino = Integer.parseInt(table.getValueAt(i, 3).toString());
-            int capienzaMax = Integer.parseInt(table.getValueAt(i, 4).toString());
-            int capienzaAttuale = Integer.parseInt(table.getValueAt(i, 5).toString());
-            int idProdotto = Integer.parseInt(table.getValueAt(i, 6).toString());
-
-            ProdottoInMagazzino prodotto = gestore.new ProdottoInMagazzino(nomeProdotto, proprieta, quantita,
-                    idMagazzino,
-                    capienzaMax, capienzaAttuale, idProdotto);
-            prodotti.add(prodotto);
+            int quantita = Integer.parseInt(quantitaFields.get(i).getText());
+            table.setValueAt(quantita, i, 1);
+            elencoProdotti.get(i).setQuantita(quantita);
         }
-
-        /*
-         * Pulisce tutti i campi di testo
-         * for (int i = 0; i < table.getRowCount(); i++) {
-         * for (int j = 0; j < table.getColumnCount(); j++) {
-         * table.setValueAt("", i, j);
-         * }
-         * }
-         */
-
-        return prodotti;
     }
-
 }
