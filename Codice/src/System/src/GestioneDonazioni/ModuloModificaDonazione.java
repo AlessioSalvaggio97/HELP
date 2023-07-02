@@ -1,46 +1,85 @@
 package GestioneDonazioni;
 
-import java.awt.Container;
-import java.awt.GridLayout;
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ModuloModificaDonazione extends JFrame {
-	private JTextField nomeProdottoField;
-    private JTextField quantitaDonataField;
-    private JTextField dataScadenzaField;
+    private JTable table;
+    private JButton invioButton;
+    private List<Donazione> donazioni;
+    private GestoreModificaDonazione gestore;
 
-    private Connection connection;
+    public ModuloModificaDonazione(List<Donazione> donazioni, GestoreModificaDonazione gestore) {
+        this.donazioni = donazioni;
+        this.gestore = gestore;
+        initialize();
+        populateTable();
+    }
 
-    public ModuloModificaDonazione() {
-        // Inizializzazione della finestra JFrame
+    private void initialize() {
         setTitle("Modifica Donazione");
-        setSize(300, 200);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(600, 400);
+        setLocationRelativeTo(null);
 
-        // Creazione dei componenti della GUI
-        JLabel nomeProdottoLabel = new JLabel("Nome Prodotto:");
-        nomeProdottoField = new JTextField(20);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        getContentPane().add(panel);
 
-        JLabel quantitaDonataLabel = new JLabel("Quantità Donata:");
-        quantitaDonataField = new JTextField(10);
+        table = new JTable();
+        JScrollPane scrollPane = new JScrollPane(table);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
-        JLabel dataScadenzaLabel = new JLabel("Data Scadenza:");
-        dataScadenzaField = new JTextField(10);
+        invioButton = new JButton("Invio");
+        panel.add(invioButton, BorderLayout.SOUTH);
+        invioButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                inviaDonazioniModificate();
+            }
+        });
+    }
 
-        JButton confermaButton = new JButton("Conferma donazione");
+    private void populateTable() {
+        String[] columnNames = { "Nome Prodotto", "Proprietà", "Quantità" };
+        Object[][] data = new Object[donazioni.size()][3];
 
-        // Creazione del pannello contenitore e aggiunta dei componenti
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new GridLayout(4, 2));
-        contentPane.add(nomeProdottoLabel);
-        contentPane.add(nomeProdottoField);
-        contentPane.add(quantitaDonataLabel);
-        contentPane.add(quantitaDonataField);
-        contentPane.add(dataScadenzaLabel);
-        contentPane.add(dataScadenzaField);
-        contentPane.add(new JLabel()); // Spazio vuoto per allineare il pulsante
-        contentPane.add(confermaButton);
+        for (int i = 0; i < donazioni.size(); i++) {
+            Donazione donazione = donazioni.get(i);
+            data[i][0] = donazione.getNomeProdotto();
+            data[i][1] = donazione.getProprieta();
+            data[i][2] = donazione.getQuantitaD();
+        }
 
-        setContentPane(contentPane);
+        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Only allow editing of the "Quantità" column
+                return column == 2;
+            }
+        };
+
+        table.setModel(tableModel);
+    }
+
+    private void inviaDonazioniModificate() {
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        List<Donazione> nuoveDonazioni = new ArrayList<>();
+
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            String nomeProdotto = tableModel.getValueAt(i, 0).toString();
+            String proprieta = tableModel.getValueAt(i, 1).toString();
+            int nuovaQuantita = Integer.parseInt(tableModel.getValueAt(i, 2).toString());
+
+            Donazione donazione = new Donazione(0, 0, 0, 0, "", nuovaQuantita, "", nomeProdotto, proprieta);
+            nuoveDonazioni.add(donazione);
+        }
+
+        gestore.verificaCapienza(nuoveDonazioni);
+        dispose();
     }
 }

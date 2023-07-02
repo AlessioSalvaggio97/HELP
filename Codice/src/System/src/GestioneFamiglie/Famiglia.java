@@ -1,5 +1,6 @@
 package GestioneFamiglie;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import GestioneFamiglie.Famiglia.Componente;
@@ -15,6 +16,7 @@ public class Famiglia {
         this.ID_F = ID_F;
         this.ID_U = ID_U;
         this.componenti = componenti;
+        this.listaComponenti = new ArrayList<>();
     }
 
     public class Componente {
@@ -90,7 +92,7 @@ public class Famiglia {
     public void setComponentiNum(List<Componente> componenti) {
         this.componenti = componenti.size();
     }
-    
+
     public int getID_F() {
         return ID_F;
     }
@@ -115,11 +117,11 @@ public class Famiglia {
         this.componenti = componenti;
     }
 
-     public List<Componente> getListaComponenti() {
+    public List<Componente> getListaComponenti() {
         return listaComponenti;
     }
 
     public void setListaComponenti(List<Componente> componenti) {
-        this.listaComponenti = listaComponenti;
+        this.listaComponenti = componenti;
     }
 }

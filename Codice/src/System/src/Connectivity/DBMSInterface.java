@@ -2,6 +2,7 @@ package Connectivity;
 
 import Autenticazione.ModuloLogin;
 import Autenticazione.Utente;
+import GestioneDonazioni.Donazione;
 import GestioneDonazioni.Richiesta;
 import GestioneDonazioni.Spedizione;
 import Main.SchermataPrincipale;
@@ -142,30 +143,19 @@ public class DBMSInterface {
             String query = "SELECT * FROM famiglia JOIN componente ON famiglia.ID_F=componente.ID_F";
             rs = st.executeQuery(query);
 
-            // Mappa le famiglie con i rispettivi componenti
-            Map<Integer, Famiglia> famiglieMap = new HashMap<>();
-
             // Itera sui risultati e crea gli oggetti Famiglia e Componente
             while (rs.next()) {
                 int ID_F = rs.getInt("ID_F");
                 int ID_U = rs.getInt("ID_U");
                 int componenti = rs.getInt("componenti");
 
-                Famiglia famiglia;
-
-                // Controlla se la famiglia è già presente nella mappa
-                if (famiglieMap.containsKey(ID_F)) {
-                    famiglia = famiglieMap.get(ID_F);
-                } else {
-                    famiglia = new Famiglia(ID_F, ID_U, componenti);
-                    famiglieMap.put(ID_F, famiglia);
-                }
+                Famiglia famiglia = new Famiglia(ID_F, ID_U, componenti);
 
                 // Crea l'oggetto Componente
                 String nome = rs.getString("nome");
                 String cognome = rs.getString("cognome");
-                String codice = rs.getString("codice");
-                String data = rs.getString("data");
+                String codice = rs.getString("codice_fiscale");
+                String data = rs.getString("data_nascita");
                 String indirizzo = rs.getString("indirizzo");
                 String bisogni = rs.getString("bisogni");
 
@@ -174,10 +164,10 @@ public class DBMSInterface {
 
                 // Aggiungi il componente all'oggetto Famiglia
                 famiglia.getListaComponenti().add(componente);
-            }
 
-            // Aggiungi le famiglie alla lista
-            famiglie.addAll(famiglieMap.values());
+                // Aggiungi la famiglia alla lista
+                famiglie.add(famiglia);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -283,6 +273,40 @@ public class DBMSInterface {
         String query = "UPDATE schema_di_distr";
     }
 
+    // Modifica donazione
+    public List<Donazione> getDonazione() {
+        Statement st;
+        List<Donazione> donazioni = new ArrayList<>();
+
+        String query = "SELECT ID_D, donazione.ID_P, ID_M, donazione.ID_U, data, quantità_d, scadenza, nome_prodotto, proprietà FROM donazione JOIN prodotto WHERE donazione.ID_P = prodotto.ID_P";
+        try {
+            st = connDatabase.createStatement();
+            ResultSet resultSet = st.executeQuery(query);
+            while (resultSet.next()) {
+                int idD = resultSet.getInt("ID_D");
+                int idP = resultSet.getInt("ID_P");
+                int idM = resultSet.getInt("ID_M");
+                int idU = resultSet.getInt("ID_U");
+                String data = resultSet.getString("data");
+                int quantitaD = resultSet.getInt("quantità_d");
+                String scadenza = resultSet.getString("scadenza");
+                String nomeProdotto = resultSet.getString("nome_prodotto");
+                String proprieta = resultSet.getString("proprietà");
+
+                Donazione donazione = new Donazione(idD, idP, idM, idU, data, quantitaD, scadenza, nomeProdotto,
+                        proprieta);
+                donazioni.add(donazione);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle any potential exceptions here
+        } finally {
+            // Close the resultSet, statement, and connection if needed
+        }
+
+        return donazioni;
+    }
+
     // Gestione smistamenti (con conferma ricezione spedizione)
 
     public List<Spedizione> getSpedizionePrevista() {
@@ -336,7 +360,7 @@ public class DBMSInterface {
 
                 st.executeUpdate(queryInvio);
 
-                //update magazzino?
+                // update magazzino?
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -364,7 +388,7 @@ public class DBMSInterface {
 
     public void invioNotifica() {
         Statement st;
-        Spedizione spe = spedizione;
+        Spedizione spe;
 
         String queryInvio = "INSERT INTO notifica descrizione VALUES ('Segnalato errore di spedizione.')";
         // gestione da aggiungere
@@ -520,7 +544,7 @@ public class DBMSInterface {
             for (ProdottoInMagazzino prodotto : nuovoElencoProdotti) {
                 int nuovaQuantita = prodotto.getQuantita() - (int) sommaQuantita;
                 updateContiene.setInt(1, nuovaQuantita);
-                updateContiene.setInt(2, prodotto.getId());
+                // updateContiene.setInt(2, prodotto.getID_P());
                 updateContiene.setInt(3, prodotto.getIdMagazzino());
                 updateContiene.executeUpdate();
             }

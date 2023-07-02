@@ -1,49 +1,80 @@
 package GestioneDonazioni;
 
-import java.sql.Date;
-
 public class Donazione {
-	private int ID_D;
-	private int ID_P;
-	private int quantita_d;
-	private Date scadenza;
-	
-	public Donazione(int ID_D, int ID_P, int quantita, Date scadenza) {
-		this.ID_D = ID_D;
-		this.ID_P = ID_P;
-		this.quantita_d = quantita_d;
+	private int idD;
+	private int idP;
+	private int idM;
+	private int idU;
+	private String data;
+	private int quantitaD;
+	private String scadenza;
+	private String nomeProdotto;
+	private String proprieta;
+
+	public Donazione(int idD, int idP, int idM, int idU, String data, int quantitaD, String scadenza,
+			String nomeProdotto, String proprieta) {
+		this.idD = idD;
+		this.idP = idP;
+		this.idM = idM;
+		this.idU = idU;
+		this.data = data;
+		this.quantitaD = quantitaD;
 		this.scadenza = scadenza;
+		this.nomeProdotto = nomeProdotto;
+		this.proprieta = proprieta;
 	}
-	
-	public int getID_D() {
-		return ID_D;
+
+	public int getIdD() {
+		return idD;
 	}
-	
-	public void setID_D(int ID_D) {
-		this.ID_D = ID_D;
+
+	public int getIdP() {
+		return idP;
 	}
-	
-	
-	public int getID_P() {
-		return ID_P;
+
+	public int getIdM() {
+		return idM;
 	}
-	
-	public void setID_P(int ID_P) {
-		this.ID_P = ID_P;
+
+	public int getIdU() {
+		return idU;
 	}
-	public int getQuantita_d() {
-		return quantita_d;
+
+	public String getData() {
+		return data;
 	}
-	
-	public void setQuantita_d(int quantita_d) {
-		this.quantita_d = quantita_d;
+
+	public int getQuantitaD() {
+		return quantitaD;
 	}
-	
-	public Date getScadenza() {
+
+	public String getScadenza() {
 		return scadenza;
 	}
-	
-	public void setScadenza(Date scadenza) {
-		this.scadenza = scadenza;
+
+	public String getNomeProdotto() {
+		return nomeProdotto;
+	}
+
+	public String getProprieta() {
+		return proprieta;
+	}
+
+	// Optionally, you can override the toString() method to provide a string
+	// representation of the object
+
+	@Override
+	public String toString() {
+		return "Donazione{" +
+				"idD=" + idD +
+				", idP=" + idP +
+				", idM=" + idM +
+				", idU=" + idU +
+				", data='" + data + '\'' +
+				", quantitaD=" + quantitaD +
+				", scadenza='" + scadenza + '\'' +
+				", nomeProdotto='" + nomeProdotto + '\'' +
+				", proprieta='" + proprieta + '\'' +
+				'}';
 	}
 }

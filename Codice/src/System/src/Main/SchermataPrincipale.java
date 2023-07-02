@@ -234,7 +234,6 @@ public class SchermataPrincipale extends JFrame {
     }
 
     public void initAmministratore() {
-        JButton invioNotifica = new JButton("Invio notifica");
         JButton regFamiglia = new JButton("Registra famiglia");
         JButton visualizzaFamiglia = new JButton("Visualizza dati famiglia");
         JButton visualizzaRichieste = new JButton("Visualizza richieste");
@@ -244,18 +243,12 @@ public class SchermataPrincipale extends JFrame {
 
         JPanel amministratorePnl = new JPanel();
         amministratorePnl.setLayout(new GridLayout(7, 1, 10, 10));
-        amministratorePnl.add(invioNotifica);
         amministratorePnl.add(regFamiglia);
         amministratorePnl.add(visualizzaFamiglia);
         amministratorePnl.add(visualizzaRichieste);
         amministratorePnl.add(modificaDonazione);
         amministratorePnl.add(visualizzaStorico);
         amministratorePnl.add(scaricaReport);
-
-        invioNotifica.addActionListener(e -> {
-            SchermataPrincipale.this.setVisible(false);
-            GestoreInvioNotifiche gin = new GestoreInvioNotifiche(SchermataPrincipale.this, u, db);
-        });
 
         regFamiglia.addActionListener(e -> {
             SchermataPrincipale.this.setVisible(false);

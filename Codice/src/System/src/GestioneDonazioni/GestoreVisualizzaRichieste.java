@@ -25,9 +25,10 @@ public class GestoreVisualizzaRichieste {
 
 	private void visualizzaRichieste() {
 
-		ArrayList<Richiesta> richieste = db.getRichieste(u.getID_U()); // Creare classe Richiesta
+		ArrayList<Richiesta> richieste = db.getRichieste(u.getID_U());
 
 		visRichieste = new SchermataRichieste(richieste, this);
+		visRichieste.setVisible(true);
 
 		/*
 		 * CustomTableModel model = (DefaultTableModel)
