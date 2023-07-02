@@ -81,7 +81,16 @@ public class SchermataPrincipale extends JFrame {
         modificaButton.setText("Modifica Dati");
         modificaDatiPnl.add(modificaButton);
 
+        modificaButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SchermataPrincipale.this.setVisible(false);
+                 gvr = new GestoreVisualizzaRichieste(SchermataPrincipale.this, u, db);
+            }
+        });
+
         cont.add(footerPnl, BorderLayout.SOUTH);
+
+        
     }
 
     // Azienda
