@@ -33,6 +33,8 @@ public class GestoreModificaDonazione {
         if (Integer.parseInt(giornoCorrente)< 23) {
             donazioni = db.getDonazione();
 
+            System.out.println(donazioni.get(1).getNomeProdotto());
+
             mmd = new ModuloModificaDonazione(donazioni, this);
             mmd.setVisible(true);
         }
