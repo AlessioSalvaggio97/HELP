@@ -14,16 +14,25 @@ public class GestoreAggiungiProdotto {
     private SchermataPrincipale s;
     private Utente u;
     private DBMSInterface db;
+    private ModuloAggiungiProdotto modAggiungi;
+    private List<Prodotto> = listaProdottiSelezionabili;
     
     public GestoreAggiungiProdotto(SchermataPrincipale s, Utente u, DBMSInterface db) {
         this.s=s;
         this.u=u;
         this.db=db;
-		aggiungiProdotto();
+		GestisciAggiungiProdotto();
 	}
 
-    public void aggiungiProdotto(){
-        modAggiungi = new ModuloAggiungiProdotto;
+    public void GestisciAggiungiProdotto(){
+        
+        listaProdottiSelezionabili = db.getLista();
+
+        modAggiungi = new ModuloAggiungiProdotto();
     }
+
 }
 
+public Prodotto(){
+        
+    }
