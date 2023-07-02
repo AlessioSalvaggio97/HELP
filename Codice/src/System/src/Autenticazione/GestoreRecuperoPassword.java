@@ -13,48 +13,73 @@ public class GestoreRecuperoPassword {
     private PannelloErroreMail pannErrMail;
     private PannelloErroreOTP pannErrOTP;
     private PannelloErroreRequisiti pannErrReq;
+    private String emailInserita;
+    private boolean isCorrect;
+    private boolean checkRequirement;
+    private String passwordInserita;
 
+    public GestoreRecuperoPassword(ModuloLogin login, DBMSInterface db) {
+        this.login = login;
+        this.db = db;
 
-    public GestoreRecuperoPassword(ModuloLogin login, DBMSInterface db){
-    this.login = login;
-    this.db = db;
+        gestisciRecupero();
 
-    gestisciRecupero();
     }
 
-    public void gestisciRecupero(){
-        mr = new ModuloRecuperoPassword(db);
-        
-        isRegistered = db.verificaCredenziali(email);
+    public void gestisciRecupero() {
+        mr = new ModuloRecuperoPassword(db, this);
+        System.out.println("Gestisci recupero");
+        mr.setVisible(true);
+    }
 
-        while(isRegistered==false){
+    public void gestisciMail() {
+
+        System.out.println("Gestisci mail");
+        emailInserita = mr.getEmail();
+
+        System.out.println(emailInserita);
+        Object[] credentials = db.verificaCredenziali(emailInserita);
+        System.out.println(credentials.toString());
+
+        if (credentials == null) { // la verificaCredenziali ritorna NULL se non c'è una tabella con quell'email
+            isRegistered = false;
+        } else
+            isRegistered = true;
+
+        while (isRegistered == false) {
             pannErrMail = new PannelloErroreMail();
-            mr = new ModuloRecuperoPassword(db);
-            isRegistered = db.verificaCredenziali(email);
+            mr = new ModuloRecuperoPassword(db, this);
         }
 
+        mOTP = new ModuloOTP(this);
 
-        mOTP = new ModuloOTP();
-        isRegistered = verificaOTP(otp); 
+    }
 
-        while(isCorrect==false){
+    public void gestisciOTP(int OTPInserito) {
+        isCorrect = db.verificaOTP(OTPInserito, emailInserita);
+
+        while (isCorrect == false) {
             pannErrOTP = new PannelloErroreOTP();
-            mOTP = new ModuloOTP();
-            isCorrect = db.verificaOTP(otp);
+            mOTP = new ModuloOTP(this);
+            isCorrect = db.verificaOTP(OTPInserito, emailInserita);
         }
 
         mnp = new ModuloNuovaPassword();
-        checkRequirement = verificaRequisiti(password);
+        passwordInserita = mnp.getPassword();
+        checkRequirement = verificaRequisiti(passwordInserita);
 
-        while(checkRequirement == false){
+        while (checkRequirement == false) {
             pannErrReq = new PannelloErroreRequisiti();
             mnp = new ModuloNuovaPassword();
-            checkRequirement = db.verificaRequisiti;
+            passwordInserita = mnp.getPassword();
+            checkRequirement = verificaRequisiti(passwordInserita);
         }
 
-        moduloLogin.setVisible(true);
-
+        login.setVisible(true);
     }
 
+    public boolean verificaRequisiti(String passwordInserita) {
+        return true;
+    }
 
 }

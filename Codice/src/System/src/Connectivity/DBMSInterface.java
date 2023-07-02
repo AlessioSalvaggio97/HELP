@@ -74,6 +74,11 @@ public class DBMSInterface {
         return null;
     }
 
+    public boolean verificaOTP(int OTPInserito, String emailInserita){
+        
+        return true;
+    }
+    
     // GestioneFamiglia
 
     public boolean verificaDatiFamiglia(List<Famiglia.Componente> membriFamiglia) {
@@ -504,6 +509,11 @@ public class DBMSInterface {
         }
     }
 
+    public List<Donazione> getRecuperoStorico(){ ///
+        List<Donazione> storicoDonazioni=null;
+        return storicoDonazioni;
+    }
+
     // GestoreConfermaSmistamento
     public List<GestoreConfermaSmistamento.Smistamento> getSmistamento() {
         Statement st;
@@ -667,5 +677,10 @@ public class DBMSInterface {
     }
 
     // da continuare public Report scaricaReport(Utente u) {}
+
+    //Sospendi polo
+    public void sospendiPolo(){
+
+    }
 
 }

@@ -34,6 +34,6 @@ public class GestoreScaricaReport {
 		copiaReport = db.scaricaReport(u);
 
 
-		return copiaReport
+		return copiaReport; //invece dovrebbe effettuare il download
 	}
 }

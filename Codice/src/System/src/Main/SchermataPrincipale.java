@@ -84,7 +84,7 @@ public class SchermataPrincipale extends JFrame {
         modificaButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 SchermataPrincipale.this.setVisible(false);
-                 gvr = new GestoreVisualizzaRichieste(SchermataPrincipale.this, u, db);
+                GestoreVisualizzaRichieste gvr = new GestoreVisualizzaRichieste(SchermataPrincipale.this, u, db);
             }
         });
 

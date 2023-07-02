@@ -12,8 +12,12 @@ import java.awt.event.ActionListener;
 public class ModuloOTP extends JFrame {
     private JTextField txtOTP;
     private JButton btnConferma;
+    GestoreRecuperoPassword grp;
+    private int OTP;
 
-    public ModuloOTP() {
+    public ModuloOTP(GestoreRecuperoPassword grp) {
+        this.grp = grp;
+
         setTitle("Modulo OTP");
         setSize(300, 150);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,9 +40,8 @@ public class ModuloOTP extends JFrame {
 
         btnConferma.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String OTP = txtOTP.getText();
-                // Passa il codice all'interfaccia del DBMS
-                // Aggiungi qui la logica per passare il codice all'interfaccia del DBMS
+                OTP = Integer.parseInt(txtOTP.getText());
+                grp.gestisciOTP(OTP);
             }
         });
     }

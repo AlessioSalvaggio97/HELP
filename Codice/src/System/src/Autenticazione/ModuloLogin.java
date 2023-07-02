@@ -75,7 +75,7 @@ public class ModuloLogin extends JFrame {
 		recuperaPassword.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				GestoreRecuperoPassword gr = new GestoreRecuperoPassword();
+				GestoreRecuperoPassword gr = new GestoreRecuperoPassword(ModuloLogin.this,db);
 				ModuloLogin.this.dispose();
 			}
 		});

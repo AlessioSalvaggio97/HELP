@@ -6,7 +6,7 @@ public class SospensioneAutomaticaBoundary{
     private DBMSInterface db;
     
     public SospensioneAutomaticaBoundary(DBMSInterface db) {
-        db.sospendiPolo();
+        db.sospendiPolo(); //da continuare
     }
     
 }
