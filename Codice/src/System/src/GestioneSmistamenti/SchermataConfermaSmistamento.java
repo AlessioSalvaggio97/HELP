@@ -46,6 +46,7 @@ public class SchermataConfermaSmistamento extends JFrame {
         confermaButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 gestore.confermaSmistamento(ID_Spe);
+                gestore.chiudiSchermata();
             }
         });
         JPanel buttonPanel = new JPanel();

@@ -471,6 +471,39 @@ public class DBMSInterface {
         return listaProdotti;
     }
 
+    public void inviaProdottiSelezionati(List<Prodotto> prodotti, int ID_U) {
+        try {
+            // Itera sulla lista dei prodotti selezionati
+            for (Prodotto prodotto : prodotti) {
+                // Verifica se esiste già una riga per il prodotto e l'ID_U forniti
+                String selectQuery = "SELECT * FROM prodotti WHERE nome_prodotto = ? AND ID_U IS NULL";
+                PreparedStatement selectStatement = connDatabase.prepareStatement(selectQuery);
+                selectStatement.setString(1, prodotto.getNome_prodotto());
+                ResultSet resultSet = selectStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    // Una riga esiste già, quindi aggiorna la colonna ID_U
+                    int existingID_P = resultSet.getInt("ID_P");
+                    String updateQuery = "UPDATE prodotto SET ID_U = ? WHERE ID_P = ?";
+                    PreparedStatement updateStatement = connDatabase.prepareStatement(updateQuery);
+                    updateStatement.setInt(1, ID_U);
+                    updateStatement.setInt(2, existingID_P);
+                    updateStatement.executeUpdate();
+                } else {
+                    // Nessuna riga trovata, quindi inserisci una nuova riga
+                    String insertQuery = "INSERT INTO prodotto (nome_prodotto, proprietà, ID_U) VALUES (?, ?, ?)";
+                    PreparedStatement insertStatement = connDatabase.prepareStatement(insertQuery);
+                    insertStatement.setString(1, prodotto.getNome_prodotto());
+                    insertStatement.setString(2, prodotto.getProprietà());
+                    insertStatement.setInt(3, ID_U);
+                    insertStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            // Gestisci eventuali eccezioni
+        }
+    }
+
     // GestoreConfermaSmistamento
     public List<GestoreConfermaSmistamento.Smistamento> getSmistamento() {
         Statement st;

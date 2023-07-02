@@ -1,6 +1,7 @@
 package GestioneSmistamenti;
 
 import Connectivity.DBMSInterface;
+import GestioneFamiglie.SchermataConferma;
 
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ public class GestoreConfermaSmistamento {
     private DBMSInterface db;
     private SchermataConfermaSmistamento scConfSmi;
     private List<Smistamento> smi;
+    private SchermataConferma scConf;
 
     public GestoreConfermaSmistamento(SchermataPrincipale s, Utente u, DBMSInterface db) {
         this.s = s;
@@ -27,7 +29,6 @@ public class GestoreConfermaSmistamento {
 
     public void gestisciConfermaSmistamento(){
         smi = db.getSmistamento();
-        System.out.println("Gestisci Conferma Smistamneto");
         scConfSmi = new SchermataConfermaSmistamento(smi, this);
         scConfSmi.setVisible(true);
     }
@@ -36,6 +37,8 @@ public class GestoreConfermaSmistamento {
 
         //Chiude la schermata
         scConfSmi.dispose();
+
+        scConf = new SchermataConferma("Conferma avvenuta con successo!");
 
         // Mostra la SchermataPrincipale
         s.setVisible(true);

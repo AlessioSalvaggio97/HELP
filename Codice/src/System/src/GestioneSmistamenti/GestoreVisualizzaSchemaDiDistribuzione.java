@@ -20,12 +20,12 @@ public class GestoreVisualizzaSchemaDiDistribuzione {
         this.db = db;
         this.schema = db.getSchema();
 
-        SchermataSchemadiDistribuzione schDis = new SchermataSchemadiDistribuzione(schema, this);
+        schDis = new SchermataSchemadiDistribuzione(schema, this);
     }
 
     public void chiudiSchermata() {
         // Chiude la schermata dello schema
-        schDis.chiudiSchermata();
+        schDis.dispose();
         
         // Mostra la SchermataPrincipale
         s.setVisible(true);

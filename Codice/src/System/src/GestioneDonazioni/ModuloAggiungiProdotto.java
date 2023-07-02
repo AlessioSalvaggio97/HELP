@@ -9,6 +9,7 @@ import GestioneDonazioni.GestoreAggiungiProdotto.Prodotto;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ModuloAggiungiProdotto extends JFrame {
@@ -71,10 +72,12 @@ public class ModuloAggiungiProdotto extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int[] selectedRows = table.getSelectedRows();
                 if (selectedRows.length > 0) {
+                    List<Prodotto> prodottiSelezionati = new ArrayList<>();
                     for (int selectedRow : selectedRows) {
                         Prodotto prodottoSelezionato = listaProdotti.get(selectedRow);
-                        gestoreModuloAggiungi.aggiungiProdotto(prodottoSelezionato);
+                        prodottiSelezionati.add(prodottoSelezionato);
                     }
+                    gestoreModuloAggiungi.aggiungiProdotti(prodottiSelezionati);
                 } else {
                     JOptionPane.showMessageDialog(ModuloAggiungiProdotto.this, "Seleziona almeno un prodotto.",
                             "Errore",
