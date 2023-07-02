@@ -51,8 +51,8 @@ public class ModuloModificaDonazione extends JFrame {
         for (int i = 0; i < donazioni.size(); i++) {
             Donazione donazione = donazioni.get(i);
             data[i][0] = donazione.getNomeProdotto();
-            data[i][1] = donazione.getProprieta();
-            data[i][2] = donazione.getQuantitaD();
+            data[i][1] = donazione.getProprietà();
+            data[i][2] = donazione.getQuantita_d();
         }
 
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
