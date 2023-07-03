@@ -31,9 +31,9 @@ public class GestoreScaricaReport {
 	}
 
 	public void scaricaReport(){
-		copiaReport = db.scaricaReport(u);
+		db.scaricaReport(elencoReport);
 
 
-		return copiaReport; //invece dovrebbe effettuare il download
+		//return copiaReport; //invece dovrebbe effettuare il download
 	}
 }

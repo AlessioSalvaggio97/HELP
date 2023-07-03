@@ -19,7 +19,11 @@ import javax.swing.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -74,11 +78,11 @@ public class DBMSInterface {
         return null;
     }
 
-    public boolean verificaOTP(int OTPInserito, String emailInserita){
-        
+    public boolean verificaOTP(int OTPInserito, String emailInserita) {
+
         return true;
     }
-    
+
     // GestioneFamiglia
 
     public boolean verificaDatiFamiglia(List<Famiglia.Componente> membriFamiglia) {
@@ -509,8 +513,8 @@ public class DBMSInterface {
         }
     }
 
-    public List<Donazione> getRecuperoStorico(){ ///
-        List<Donazione> storicoDonazioni=null;
+    public List<Donazione> getRecuperoStorico() { ///
+        List<Donazione> storicoDonazioni = null;
         return storicoDonazioni;
     }
 
@@ -676,10 +680,36 @@ public class DBMSInterface {
         return datiScarico;
     }
 
-    // da continuare public Report scaricaReport(Utente u) {}
+    public void scaricaReport(List<Report> elencoReport) {
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter("C:/Users/cloud/Desktop/Class diagram/csv/report.csv"))) {
 
-    //Sospendi polo
-    public void sospendiPolo(){
+            // Scrive le colonne nel CSV
+            writer.write("ID_Report,ID_P,Nome Prodotto,Proprietà,Quantità,ID_M,Data Scarico");
+            writer.newLine();
+
+            // Scrive le righe nel CSV
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            for (Report report : elencoReport) {
+                writer.write(report.getID_Report() + ",");
+                writer.write(report.getID_P() + ",");
+                writer.write(report.getNome_prodotto() + ",");
+                writer.write(report.getProprietà() + ",");
+                writer.write(report.getQuantità() + ",");
+                writer.write(report.getID_M() + ",");
+                writer.write(dateFormat.format(report.getData_scarico()));
+                writer.newLine();
+            }
+
+            System.out.println("Dati esportati nel CSV.");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Sospendi polo
+    public void sospendiPolo() {
 
     }
 

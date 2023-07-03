@@ -81,7 +81,7 @@ public class SchermataScaricaReport extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (reportSelezionato != null) {
-                   // gestoreScaricaReport.scaricaReport(reportSelezionato); da definire
+                   gestoreScaricaReport.scaricaReport(); //dovrebbe passare quello selezionato
                 } else {
                     JOptionPane.showMessageDialog(SchermataScaricaReport.this, "Seleziona un report.", "Errore",
                             JOptionPane.ERROR_MESSAGE);
